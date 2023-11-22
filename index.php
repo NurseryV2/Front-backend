@@ -1,3 +1,10 @@
+<?php
+include("db.php");
+
+$sql = "SELECT * FROM plants where category_id=1;";
+$result = $conn->query($sql);
+
+?>
 <!doctype html>
 <html>
 
@@ -51,11 +58,7 @@
             </div>
 
         </div>
-        <!-- <div class="inset-0 flex items-center justify-center text-white text-center">
-            <div class="h-screen">
-                <p class="text-lg my-auto">Flowing Plants <span class="text-base my-auto">For Every Mood</span></p>
-            </div>
-        </div> -->
+
         <div class="max-w-screen-xl px-10 bg-transparent w-full h-screen py-10">
             <div class="backdrop-blur-sm bg-white w-full h-full p-10 mr-10 flex justify-around">
                 <img src="./images/6.jpg" alt="" class="h-2/3 w-96 -ml-10">
@@ -97,14 +100,24 @@
 
         <section id="Projects"
             class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
-            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+
+            <?php
+    while ($row = $result->fetch_assoc()) {
+        ?>
+
+            <div class="swiper-slide w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
                 <a href="#">
-                    <img src="./images/6.jpg" alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
+                    <img src="<?php echo $row['image_url']; ?>" alt="Product"
+                        class="h-80 w-72 object-cover rounded-t-xl" />
                     <div class="px-4 py-3 w-72">
                         <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
+                        <p class="text-lg font-bold text-black truncate block capitalize">
+                            <?php echo $row['name']; ?>
+                        </p>
                         <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">$149</p>
+                            <p class="text-lg font-semibold text-black cursor-auto my-3">
+                                $<?php echo $row['price']; ?>
+                            </p>
                             <del>
                                 <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
                             </del>
@@ -120,120 +133,10 @@
                 </a>
             </div>
 
-            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                <a href="#">
-                    <img src="./images/12.jpg" alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                    <div class="px-4 py-3 w-72">
-                        <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                        <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">$149</p>
-                            <del>
-                                <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                            </del>
-                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                    <path
-                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                <a href="#">
-                    <img src="./images/5.jpg" alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                    <div class="px-4 py-3 w-72">
-                        <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                        <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">$149</p>
-                            <del>
-                                <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                            </del>
-                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                    <path
-                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            <?php
+    }
+    ?>
 
-            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                <a href="#">
-                    <img src="./images/13.jpg" alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                    <div class="px-4 py-3 w-72">
-                        <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                        <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">$149</p>
-                            <del>
-                                <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                            </del>
-                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                    <path
-                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                <a href="#">
-                    <img src="./images/7.jpg" alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                    <div class="px-4 py-3 w-72">
-                        <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                        <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">$149</p>
-                            <del>
-                                <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                            </del>
-                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                    <path
-                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!--   🛑 Product card 5 - Ends Here  -->
-
-            <!--   ✅ Product card 6 - Starts Here 👇 -->
-            <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                <a href="#">
-                    <img src="./images/14.jpg" alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                    <div class="px-4 py-3 w-72">
-                        <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                        <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">$149</p>
-                            <del>
-                                <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                            </del>
-                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                    <path
-                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
         </section>
 
         <h3 class="font-serif text-3xl mx-auto text-center my-5 ">TRENDING PRODUCT</h3>
@@ -246,7 +149,8 @@
                         </a>
                         <div class="flex flex-col flex-1  ">
 
-                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his dolorum
+                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his
+                                dolorum
                             </h3>
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
                                 <span>June 1, 2020</span>
@@ -262,7 +166,8 @@
                             <a rel="noopener noreferrer" href="#"
                                 aria-label="Te nulla oportere reprimique his dolorum"></a>
 
-                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his dolorum
+                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his
+                                dolorum
                             </h3>
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
                                 <span>June 2, 2020</span>
@@ -278,7 +183,8 @@
                             <a rel="noopener noreferrer" href="#"
                                 aria-label="Te nulla oportere reprimique his dolorum"></a>
 
-                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his dolorum
+                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his
+                                dolorum
                             </h3>
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
                                 <span>June 2, 2020</span>
@@ -317,7 +223,8 @@
                             </ul>
                         </div>
                         <div>
-                            <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Legal</h2>
+                            <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Legal
+                            </h2>
                             <ul class="text-gray-500 dark:text-gray-400 font-medium">
                                 <li class="mb-4">
                                     <a href="#" class="hover:underline">Privacy Policy</a>
@@ -386,7 +293,10 @@
         </footer>
 
 
-
+        <?php
+// Close the database connection
+$conn->close();
+?>
 
 </body>
 
