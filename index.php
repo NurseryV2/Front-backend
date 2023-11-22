@@ -16,15 +16,9 @@ $result = $conn->query($sql);
 
 <body>
     <div class="bg-[url('./images/1.jpg')] bg-cover bg-center h-screen ">
-        <!-- <div class="bg-[#389f0a] h-7 w-7 rounded-full flex justify-center items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-        </svg>
-    </div> -->
         <div class="backdrop-blur-sm bg-white/30 flex justify-between w-full h-10 items-center">
             <div class="px-10">logo</div>
-            <div class="text-sm lg:flex-grow text-center backdrop-blur-sm white/2 ">
+            <div class="text-sm lg:flex-grow text-center  ">
                 <a href="#responsive-header"
                     class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
                     Docs
@@ -139,24 +133,44 @@ $result = $conn->query($sql);
 
         </section>
 
-        <h3 class="font-serif text-3xl mx-auto text-center my-5 ">TRENDING PRODUCT</h3>
+        <h3 class="font-serif text-3xl mx-auto text-center my-5 ">TRENDING BLOGS</h3>
         <section class="  text-gray-800">
             <div class="container mx-auto space-y-8 ">
                 <div class=" gap-x-4 gap-y-8  flex justify-center items-center">
                     <article class="flex flex-col bg-gray-50">
                         <a rel="noopener noreferrer" href="#" aria-label="Te nulla oportere reprimique his dolorum">
-                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="./images/8.jpg">
+                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="./images/9.jpg">
                         </a>
-                        <div class="flex flex-col flex-1  ">
-
-                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his
-                                dolorum
-                            </h3>
+                        <div class="flex flex-col flex-1">
+                            <a rel="noopener noreferrer" href="#"
+                                aria-label="Te nulla oportere reprimique his dolorum"></a>
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
-                                <span>June 1, 2020</span>
-                                <span>2.1K views</span>
+                                <span>June 2, 2020</span>
+                                <div class="flex">
+
+                                <svg fill="#6fd404" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                 xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 442.04 442.04" xml:space="preserve" 
+                                 stroke="#6fd404"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier"
+                                  stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> 
+                                    <path d="M221.02,341.304c-49.708,0-103.206-19.44-154.71-56.22C27.808,257.59,4.044,230.351,
+                                    3.051,229.203 c-4.068-4.697-4.068-11.669,0-16.367c0.993-1.146,24.756-28.387,63.259-55.881c51.
+                                    505-36.777,105.003-56.219,154.71-56.219 c49.708,0,103.207,19.441,154.71,56.219c38.502,27.494,
+                                    62.266,54.734,63.259,55.881c4.068,4.697,4.068,11.669,0,16.367 c-0.993,1.146-24.756,28.387-63.259
+                                    ,55.881C324.227,321.863,270.729,341.304,221.02,341.304z M29.638,221.021 c9.61,9.799,27.747,27.03
+                                    ,51.694,44.071c32.83,23.361,83.714,51.212,139.688,51.212s106.859-27.851,139.688-51.212 c23.944-17.038
+                                    ,42.082-34.271,51.694-44.071c-9.609-9.799-27.747-27.03-51.694-44.071 c-32.829-23.362-83.714-51.212-139.688-
+                                    51.212s-106.858,27.85-139.688,51.212C57.388,193.988,39.25,211.219,29.638,221.021z"></path> </g> 
+                                    <g> <path d="M221.02,298.521c-42.734,0-77.5-34.767-77.5-77.5c0-42.733,34.766-77.5,77.5-77.5c18.794,0,36.924,6.814,51.04
+                                    8,19.188 c5.193,4.549,5.715,12.446,1.166,17.639c-4.549,5.193-12.447,5.714-17.639,1.166c-9.564-8.379-21.844-12.993-34.57
+                                    6-12.993 c-28.949,0-52.5,23.552-52.5,52.5s23.551,52.5,52.5,52.5c28.95,0,52.5-23.552,52.5-52.5c0-6.903,5.597-12.5,12.5-1
+                                    2.5 s12.5,5.597,12.5,12.5C298.521,263.754,263.754,298.521,221.02,298.521z"></path> </g> <g> <path d="M221.02,246.021c-13.785,0-25-11.215-2
+                                    5-25s11.21
+                                    5-25,25-25c13
+                                    .786,0,25,11.215,25,25S234.806,246.021,221.02,246.021z"></path> </g> </g> </g></svg>  
+                                    <span>2.2&Kappa; </span>
+
+                                                              </div>
                             </div>
-                        </div>
                     </article>
                     <article class="flex flex-col bg-gray-50">
                         <a rel="noopener noreferrer" href="#" aria-label="Te nulla oportere reprimique his dolorum">
@@ -165,10 +179,6 @@ $result = $conn->query($sql);
                         <div class="flex flex-col flex-1">
                             <a rel="noopener noreferrer" href="#"
                                 aria-label="Te nulla oportere reprimique his dolorum"></a>
-
-                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his
-                                dolorum
-                            </h3>
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
                                 <span>June 2, 2020</span>
                                 <span>2.2K views</span>
@@ -183,9 +193,7 @@ $result = $conn->query($sql);
                             <a rel="noopener noreferrer" href="#"
                                 aria-label="Te nulla oportere reprimique his dolorum"></a>
 
-                            <h3 class="flex-1 py-2 text-lg font-semibold leadi">Te nulla oportere reprimique his
-                                dolorum
-                            </h3>
+
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
                                 <span>June 2, 2020</span>
                                 <span>2.2K views</span>
@@ -294,7 +302,6 @@ $result = $conn->query($sql);
 
 
         <?php
-// Close the database connection
 $conn->close();
 ?>
 
