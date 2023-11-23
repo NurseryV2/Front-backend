@@ -1,7 +1,14 @@
 <?php
 include("db.php");
 
-$sql = "SELECT * FROM plants where category_id=1;";
+$categoryToShow = "house";
+
+if (isset($_GET['category'])) {
+    $categoryToShow = $_GET['category'];
+}
+
+// Query based on the selected category
+$sql = "SELECT * FROM plants WHERE category_id = (SELECT id FROM categories WHERE name = '$categoryToShow');";
 $result = $conn->query($sql);
 
 ?>
@@ -78,21 +85,21 @@ $result = $conn->query($sql);
         <h3 class="font-serif text-3xl mx-auto text-center my-5 ">TRENDING PRODUCT</h3>
         <div class=" flex justify-center items-center gap-4 my-5">
 
-            <a href="#" id="but1"
+            <a href="?category=house"
                 class=" border-2 border-solid bg-[#6fd404] opacity-1 border-gray-200 rounded-full w-32 h-8  flex items-center justify-center">
-                <button class="text-white">Top Selling</button>
+                <button class="text-white">House</button>
             </a>
-            <a href="#" id="but1"
-                class=" border-2 border-solid  opacity-1 border-gray-200 rounded-full w-32 h-8  flex items-center justify-center">
-                <button class="text-gray-400">Best Selling</button>
+            <a href="?category=wedding"
+                class=" border-2 border-solid  opacity-1 border-gray-200 rounded-full w-32 h-8  flex items-center justify-center  active:bg-[#6fd404]">
+                <button class="text-gray-400 ">Wedding</button>
             </a>
-            <a href="#" id="but1"
-                class=" border-2 border-solid opacity-1 border-gray-200 rounded-full w-40 h-8  flex items-center justify-center">
-                <button class="text-gray-400">Featured Products</button>
+            <a href="?category=love"
+                class=" border-2 border-solid opacity-1 border-gray-200 rounded-full w-40 h-8  flex items-center justify-center active:bg-[#6fd404]">
+                <button class="text-gray-400 ">Love</button>
             </a>
         </div>
 
-        <section id="Projects"
+        <section id="house-products"
             class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
 
             <?php
@@ -132,7 +139,48 @@ $result = $conn->query($sql);
     ?>
 
         </section>
+        <!-- wedding cards -->
 
+        <section id="wedding-products"
+            class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
+
+            <?php
+    while ($row = $result->fetch_assoc()) {
+        ?>
+
+            <div class="swiper-slide w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+                <a href="#">
+                    <img src="<?php echo $row['image_url']; ?>" alt="Product"
+                        class="h-80 w-72 object-cover rounded-t-xl" />
+                    <div class="px-4 py-3 w-72">
+                        <span class="text-gray-400 mr-3 uppercase text-xs">Brand</span>
+                        <p class="text-lg font-bold text-black truncate block capitalize">
+                            <?php echo $row['name']; ?>
+                        </p>
+                        <div class="flex items-center">
+                            <p class="text-lg font-semibold text-black cursor-auto my-3">
+                                $<?php echo $row['price']; ?>
+                            </p>
+                            <del>
+                                <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
+                            </del>
+                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
+                                    <path
+                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
+                                </svg></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <?php
+    }
+    ?>
+
+        </section>
         <h3 class="font-serif text-3xl mx-auto text-center my-5 ">TRENDING BLOGS</h3>
         <section class="  text-gray-800">
             <div class="container mx-auto space-y-8 ">
@@ -148,28 +196,43 @@ $result = $conn->query($sql);
                                 <span>June 2, 2020</span>
                                 <div class="flex">
 
-                                <svg fill="#6fd404" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                                 xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 442.04 442.04" xml:space="preserve" 
-                                 stroke="#6fd404"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier"
-                                  stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> 
-                                    <path d="M221.02,341.304c-49.708,0-103.206-19.44-154.71-56.22C27.808,257.59,4.044,230.351,
+                                    <svg fill="#6fd404" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 442.04 442.04"
+                                        xml:space="preserve" stroke="#6fd404">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                        </g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <g>
+                                                <g>
+                                                    <path d="M221.02,341.304c-49.708,0-103.206-19.44-154.71-56.22C27.808,257.59,4.044,230.351,
                                     3.051,229.203 c-4.068-4.697-4.068-11.669,0-16.367c0.993-1.146,24.756-28.387,63.259-55.881c51.
                                     505-36.777,105.003-56.219,154.71-56.219 c49.708,0,103.207,19.441,154.71,56.219c38.502,27.494,
                                     62.266,54.734,63.259,55.881c4.068,4.697,4.068,11.669,0,16.367 c-0.993,1.146-24.756,28.387-63.259
                                     ,55.881C324.227,321.863,270.729,341.304,221.02,341.304z M29.638,221.021 c9.61,9.799,27.747,27.03
                                     ,51.694,44.071c32.83,23.361,83.714,51.212,139.688,51.212s106.859-27.851,139.688-51.212 c23.944-17.038
                                     ,42.082-34.271,51.694-44.071c-9.609-9.799-27.747-27.03-51.694-44.071 c-32.829-23.362-83.714-51.212-139.688-
-                                    51.212s-106.858,27.85-139.688,51.212C57.388,193.988,39.25,211.219,29.638,221.021z"></path> </g> 
-                                    <g> <path d="M221.02,298.521c-42.734,0-77.5-34.767-77.5-77.5c0-42.733,34.766-77.5,77.5-77.5c18.794,0,36.924,6.814,51.04
+                                    51.212s-106.858,27.85-139.688,51.212C57.388,193.988,39.25,211.219,29.638,221.021z">
+                                                    </path>
+                                                </g>
+                                                <g>
+                                                    <path d="M221.02,298.521c-42.734,0-77.5-34.767-77.5-77.5c0-42.733,34.766-77.5,77.5-77.5c18.794,0,36.924,6.814,51.04
                                     8,19.188 c5.193,4.549,5.715,12.446,1.166,17.639c-4.549,5.193-12.447,5.714-17.639,1.166c-9.564-8.379-21.844-12.993-34.57
                                     6-12.993 c-28.949,0-52.5,23.552-52.5,52.5s23.551,52.5,52.5,52.5c28.95,0,52.5-23.552,52.5-52.5c0-6.903,5.597-12.5,12.5-1
-                                    2.5 s12.5,5.597,12.5,12.5C298.521,263.754,263.754,298.521,221.02,298.521z"></path> </g> <g> <path d="M221.02,246.021c-13.785,0-25-11.215-2
+                                    2.5 s12.5,5.597,12.5,12.5C298.521,263.754,263.754,298.521,221.02,298.521z"></path>
+                                                </g>
+                                                <g>
+                                                    <path d="M221.02,246.021c-13.785,0-25-11.215-2
                                     5-25s11.21
                                     5-25,25-25c13
-                                    .786,0,25,11.215,25,25S234.806,246.021,221.02,246.021z"></path> </g> </g> </g></svg>  
+                                    .786,0,25,11.215,25,25S234.806,246.021,221.02,246.021z"></path>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
                                     <span>2.2&Kappa; </span>
 
-                                                              </div>
+                                </div>
                             </div>
                     </article>
                     <article class="flex flex-col bg-gray-50">
@@ -304,7 +367,6 @@ $result = $conn->query($sql);
         <?php
 $conn->close();
 ?>
-
 </body>
 
 </html>
