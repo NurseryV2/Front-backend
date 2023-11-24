@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
 </head>
 
 <body>
@@ -29,7 +28,6 @@
                         <span class="ms-3">Dashboard</span>
                     </a>
                 </li>
-
                 <div class="dropdown dropdown-bottom">
 
                     <label tabindex="0" class="btn m-1">
@@ -42,9 +40,6 @@
                         <li><a href="admin.php">Categories gestion</a></li>
                     </ul>
                 </div>
-
-
-
                 <li>
                     <a href=" Membre.php"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

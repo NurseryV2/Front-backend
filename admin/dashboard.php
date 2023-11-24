@@ -23,14 +23,11 @@
               GROUP BY categories.id, categories.name";
 
     $result = mysqli_query($conn, $query);
-
-    // Calculate the total number of plants
     $totalPlantsQuery = "SELECT COUNT(id) AS total_plants FROM plants";
     $totalPlantsResult = mysqli_query($conn, $totalPlantsQuery);
     $totalPlantsRow = mysqli_fetch_assoc($totalPlantsResult);
     $totalPlants = $totalPlantsRow['total_plants'];
-
-    // Calculate the total number of users
+    //the total number of users
     $totalUsersQuery = "SELECT COUNT(user_id) AS total_users FROM users where user_type=1";
     $totalUsersResult = mysqli_query($conn, $totalUsersQuery);
     $totalUsersRow = mysqli_fetch_assoc($totalUsersResult);
@@ -71,7 +68,6 @@
                             </tr>
                         </thead>
                         <tbody>';
-
                 while ($row = mysqli_fetch_assoc($result)) {
                     echo '<tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <td class="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">' . $row['id'] . '</td>
@@ -79,15 +75,11 @@
                             <td class="px-6 py-4">' . $row['plant_count'] . '</td>
                         </tr>';
                 }
-
-                // Display the row for total plants
                 echo '<tr class="bg-[#f1f1f1] dark:bg-gray-800">
                         <td class="px-6 py-4 text-gray-900 font-semibold whitespace-nowrap dark:text-white">Total</td>
                         <td class="px-6 py-4"></td>
                         <td class="px-6 py-4 font-semibold">' . $totalPlants . '</td>
                     </tr>';
-
-                // Display the row for total users
                 echo '<tr class="bg-[#f1f1f1] dark:bg-gray-800">
                         <td class="px-6 py-4 text-gray-900 font-semibold whitespace-nowrap dark:text-white">Total Users</td>
                         <td class="px-6 py-4"></td>
