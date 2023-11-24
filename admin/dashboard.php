@@ -30,6 +30,11 @@
     $totalPlantsRow = mysqli_fetch_assoc($totalPlantsResult);
     $totalPlants = $totalPlantsRow['total_plants'];
 
+    // Calculate the total number of users
+    $totalUsersQuery = "SELECT COUNT(user_id) AS total_users FROM users";
+    $totalUsersResult = mysqli_query($conn, $totalUsersQuery);
+    $totalUsersRow = mysqli_fetch_assoc($totalUsersResult);
+    $totalUsers = $totalUsersRow['total_users'];
     ?>
     <div class="p-5 mt-14 sm:ml-64">
         <div class="relative overflow-x-hidden sm:rounded-lg">
@@ -80,6 +85,13 @@
                         <td class="px-6 py-4 text-gray-900 font-semibold whitespace-nowrap dark:text-white">Total</td>
                         <td class="px-6 py-4"></td>
                         <td class="px-6 py-4 font-semibold">' . $totalPlants . '</td>
+                    </tr>';
+
+                // Display the row for total users
+                echo '<tr class="bg-[#f1f1f1] dark:bg-gray-800">
+                        <td class="px-6 py-4 text-gray-900 font-semibold whitespace-nowrap dark:text-white">Total Users</td>
+                        <td class="px-6 py-4"></td>
+                        <td class="px-6 py-4 font-semibold">' . $totalUsers . '</td>
                     </tr>';
 
                 echo '</tbody></table>';
