@@ -17,18 +17,27 @@
     include("./sidebar.php");
     include("db.php");
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-category"])) {
-        // Get the category name from the form
         $categoryName = mysqli_real_escape_string($conn, $_POST["category-name"]);
-
-        // Insert the new category into the database
         $insertQuery = "INSERT INTO categories (name) VALUES ('$categoryName')";
         $insertResult = mysqli_query($conn, $insertQuery);
-
-        // Check if the insertion was successful
         if ($insertResult) {
             echo '<script>alert("Category added successfully!");</script>';
         } else {
             echo '<script>alert("Error adding category: ' . mysqli_error($conn) . '");</script>';
+        }
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-plant"])) {
+        $plant_id_to_delete = mysqli_real_escape_string($conn, $_POST["plant_id"]);
+    
+        // Perform the deletion
+        $deletePlantQuery = "DELETE FROM plants WHERE id = '$plant_id_to_delete'";
+        $deletePlantResult = mysqli_query($conn, $deletePlantQuery);
+    
+        // Check if the deletion was successful
+        if ($deletePlantResult) {
+            echo '<script>alert("Plant deleted successfully!");</script>';
+        } else {
+            echo '<script>alert("Error deleting plant: ' . mysqli_error($conn) . '");</script>';
         }
     }
 
@@ -38,7 +47,6 @@
             <div
                 class="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 dark:bg-gray-900">
                 <div>
-                    <!-- Use JavaScript to toggle the visibility of the form -->
                     <button onclick="toggleFormVisibility()"
                         class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                         type="button">
@@ -54,7 +62,7 @@
                             placeholder="Search for a category" required>
                     </div>
                     <button type="submit"
-                        class="p-2.5 ms-2 text-sm font-medium text-white bg-[#2F329F] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        class="p-2.5 ms-2 text-sm font-medium text-white bg-[#2f9f5c] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 20 20">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -103,11 +111,12 @@
                                                 <form method="dialog">
                                                     <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal(' . $row['id'] . ')">✕</button>
                                                 </form>
-                                                <h3 class="font-bold text-lg">Plants in Category: ' . $row['name'] . '</h3>
+                                                <h3 class="font-bold text-lg text-center mx-auto">Plants in Category: ' . $row['name'] . '</h3>
                                                 <button type="submit"
-                                                class="mt-2 p-2.5 text-sm font-medium text-white bg-[#2F329F] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                                class="mt-2 p-2.5 text-sm font-medium text-white ] rounded-lg border border-green-600 bg-[#2f9f5c] focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-green-500"
                                                 name="add-plant">
                                                 Add Plant
+                                             
                                             </button>
                                                 <table id="plantTable_' . $row['id'] . '" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -128,32 +137,40 @@
                                     $plantQuery = "SELECT id, name FROM plants WHERE category_id = $categoryId";
                                     $plantResult = mysqli_query($conn, $plantQuery);
                         
-                            while ($plantRow = mysqli_fetch_assoc($plantResult)) {
-                                echo '<tr>
-                                        <td>' . $plantRow['id'] . '</td>
-                                        <td>' . $plantRow['name'] . '</td>
-                                        <td>Delete</td>
-                                      </tr>';
-                            }
-                            
-                            echo '</tbody>
-                                </table>
-                            </div>
-                        </dialog>
-                        </td>
-                        <td>Update</td>
-                        <td>Delete</td>
-                        </tr>';
-                        }
-                        
+                                    while ($plantRow = mysqli_fetch_assoc($plantResult)) {
+                                        echo '<tr>
+                                                <td>' . $plantRow['id'] . '</td>
+                                                <td>' . $plantRow['name'] . '</td>
+                                                <td>
+                                                    <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
+                                                        <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
+                                                        <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>';
+                                    }
+                                    
+            echo '</tbody>
+            </table>
+        </div>
+        </dialog>
+        </td>
+        <td>Update</td>
+        <td>Delete</td>
+        </tr>';
+        }
 
-                echo '</tbody></table>';
-            } else {
-                echo '<p>No data found</p>';
-            }
 
-            mysqli_close($conn);
-            ?>
+        echo '</tbody>
+        </table>';
+        } else {
+        echo '<p>No data found</p>';
+        }
+
+        mysqli_close($conn);
+        ?>
             <div id="addCategoryForm" class="mt-4 hidden">
                 <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
                 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
