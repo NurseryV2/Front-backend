@@ -40,7 +40,28 @@
             echo '<script>alert("Error deleting plant: ' . mysqli_error($conn) . '");</script>';
         }
     }
-
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-category"])) {
+        $category_id_to_delete = mysqli_real_escape_string($conn, $_POST["category_id"]);
+    
+        // Delete plants associated with the category
+        $deletePlantsQuery = "DELETE FROM plants WHERE category_id = '$category_id_to_delete'";
+        $deletePlantsResult = mysqli_query($conn, $deletePlantsQuery);
+    
+        if ($deletePlantsResult) {
+            // Now, delete the category itself
+            $deleteCategoryQuery = "DELETE FROM categories WHERE id = '$category_id_to_delete'";
+            $deleteCategoryResult = mysqli_query($conn, $deleteCategoryQuery);
+    
+            if ($deleteCategoryResult) {
+                echo '<script>alert("Category and associated plants deleted successfully!");</script>';
+            } else {
+                echo '<script>alert("Error deleting category: ' . mysqli_error($conn) . '");</script>';
+            }
+        } else {
+            echo '<script>alert("Error deleting plants associated with the category: ' . mysqli_error($conn) . '");</script>';
+        }
+    }
+    
     ?>
     <div class="p-5 mt-14 sm:ml-64">
         <div class="relative overflow-x-auto sm:rounded-lg">
@@ -142,13 +163,14 @@
                                                 <td>' . $plantRow['id'] . '</td>
                                                 <td>' . $plantRow['name'] . '</td>
                                                 <td>
-                                                    <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
-                                                        <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
-                                                        <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
-                                                            Delete
-                                                        </button>
-                                                    </form>
-                                                </td>
+                                                <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
+                                                    <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                                                    <button type="submit" name="delete-category" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                    
                                             </tr>';
                                     }
                                     
@@ -158,19 +180,26 @@
         </dialog>
         </td>
         <td>Update</td>
-        <td>Delete</td>
-        </tr>';
-        }
+        <td>
+        <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
+        <input type="hidden" name="category_id" value="' . $row['id'] . '">
+        <button type="submit" name="delete-category" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+            Delete
+        </button>
+    </form>
+    </td>
+            </tr>';
+            }
 
 
-        echo '</tbody>
-        </table>';
-        } else {
-        echo '<p>No data found</p>';
-        }
+            echo '</tbody>
+            </table>';
+            } else {
+            echo '<p>No data found</p>';
+            }
 
-        mysqli_close($conn);
-        ?>
+            mysqli_close($conn);
+            ?>
             <div id="addCategoryForm" class="mt-4 hidden">
                 <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
                 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
