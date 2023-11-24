@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.6/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <title>Document</title>
 </head>
@@ -15,8 +17,6 @@
     include("./navbar.php");
     include("./sidebar.php");
     include("db.php");
-
-    // Handle form submission for adding a new category
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-category"])) {
         // Get the category name from the form
         $categoryName = mysqli_real_escape_string($conn, $_POST["category-name"]);
@@ -127,14 +127,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-    function toggleFormVisibility() {
-        var addCategoryForm = document.getElementById('addCategoryForm');
-        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-            '') ? 'block' : 'none';
-    }
-    </script>
 </body>
 
 </html>
