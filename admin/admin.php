@@ -28,9 +28,10 @@
     }
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-plant"])) {
         $plant_id_to_delete = mysqli_real_escape_string($conn, $_POST["plant_id"]);
+        $category_id = mysqli_real_escape_string($conn, $_POST["category_id"]);
     
         // Perform the deletion
-        $deletePlantQuery = "DELETE FROM plants WHERE id = '$plant_id_to_delete'";
+        $deletePlantQuery = "DELETE FROM plants WHERE id = '$plant_id_to_delete' AND category_id = '$category_id'";
         $deletePlantResult = mysqli_query($conn, $deletePlantQuery);
     
         // Check if the deletion was successful
@@ -40,6 +41,7 @@
             echo '<script>alert("Error deleting plant: ' . mysqli_error($conn) . '");</script>';
         }
     }
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-category"])) {
         $category_id_to_delete = mysqli_real_escape_string($conn, $_POST["category_id"]);
     
@@ -163,16 +165,17 @@
                                                 <td>' . $plantRow['id'] . '</td>
                                                 <td>' . $plantRow['name'] . '</td>
                                                 <td>
-                                                <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
-                                                    <input type="hidden" name="category_id" value="' . $row['id'] . '">
-                                                    <button type="submit" name="delete-category" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </td>
-                                    
+                                                    <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
+                                                        <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
+                                                        <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                                                        <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </td>
                                             </tr>';
                                     }
+                                    
                                     
             echo '</tbody>
             </table>
