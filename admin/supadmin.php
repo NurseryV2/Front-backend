@@ -20,8 +20,6 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-category"])) {
         // Get the category name from the form
         $categoryName = mysqli_real_escape_string($conn, $_POST["category-name"]);
-
-        // Insert the new category into the database
         $insertQuery = "INSERT INTO categories (name) VALUES ('$categoryName')";
         $insertResult = mysqli_query($conn, $insertQuery);
 

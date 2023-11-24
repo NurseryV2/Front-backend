@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.6/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.6/dist/full.min.css" rel="stylesheet" type="text/css" />
     <title>Document</title>
 </head>
 
@@ -89,20 +88,64 @@
                         </thead>
                         <tbody>';
 
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <td class="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                                ' . $row['id'] . '
-                            </td>
-                            <td class="px-6 py-4">
-                                ' . $row['name'] . '
-                            </td>
-                            <td>Open</td>
-
-                            <td>Update</td>
-                            <td>Delete</td>
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <td class="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                                        ' . $row['id'] . '
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        ' . $row['name'] . '
+                                    </td>
+                                    <td>
+                                    <button class="btn btn-success" onclick="openModal(\'modal_' . $row['id'] . '\')">see plants</button>
+                                    <dialog id="modal_' . $row['id'] . '" class="modal">
+                                            <div class="modal-box">
+                                                <form method="dialog">
+                                                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal(' . $row['id'] . ')">✕</button>
+                                                </form>
+                                                <h3 class="font-bold text-lg">Plants in Category: ' . $row['name'] . '</h3>
+                                                <button type="submit"
+                                                class="mt-2 p-2.5 text-sm font-medium text-white bg-[#2F329F] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                                name="add-plant">
+                                                Add Plant
+                                            </button>
+                                                <table id="plantTable_' . $row['id'] . '" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                                        <tr>
+                                                            <th scope="col" class="px-6 py-3">
+                                                                Plant ID
+                                                            </th>
+                                                            <th scope="col" class="px-6 py-3">
+                                                                Plant Name
+                                                            </th>
+                                                        <th>Delete</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>';
+                                        
+                            // Fetch plants data from the db with the corresponding category id
+                                    $categoryId = $row['id'];
+                                    $plantQuery = "SELECT id, name FROM plants WHERE category_id = $categoryId";
+                                    $plantResult = mysqli_query($conn, $plantQuery);
+                        
+                            while ($plantRow = mysqli_fetch_assoc($plantResult)) {
+                                echo '<tr>
+                                        <td>' . $plantRow['id'] . '</td>
+                                        <td>' . $plantRow['name'] . '</td>
+                                        <td>Delete</td>
+                                      </tr>';
+                            }
+                            
+                            echo '</tbody>
+                                </table>
+                            </div>
+                        </dialog>
+                        </td>
+                        <td>Update</td>
+                        <td>Delete</td>
                         </tr>';
-                }
+                        }
+                        
 
                 echo '</tbody></table>';
             } else {
@@ -111,7 +154,6 @@
 
             mysqli_close($conn);
             ?>
-            <!-- Form for adding a new category (initially hidden) -->
             <div id="addCategoryForm" class="mt-4 hidden">
                 <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
                 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
@@ -128,13 +170,24 @@
             </div>
         </div>
     </div>
+    <script>
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.showModal();
+        }
+    }
+
+    function toggleFormVisibility() {
+        var addCategoryForm = document.getElementById('addCategoryForm');
+        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+            '') ? 'block' : 'none';
+    }
+    </script>
+
 </body>
-<script>
-function toggleFormVisibility() {
-    var addCategoryForm = document.getElementById('addCategoryForm');
-    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-        '') ? 'block' : 'none';
-}
-</script>
+
+
+
 
 </html>
