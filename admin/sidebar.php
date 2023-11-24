@@ -39,7 +39,6 @@
                         </svg>
                         Categories</label>
                     <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                        <li><a href="supadmin.php">Plants/Category</a></li>
                         <li><a href="admin.php">Categories gestion</a></li>
                     </ul>
                 </div>
