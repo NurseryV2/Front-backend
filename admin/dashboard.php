@@ -31,7 +31,7 @@
     $totalPlants = $totalPlantsRow['total_plants'];
 
     // Calculate the total number of users
-    $totalUsersQuery = "SELECT COUNT(user_id) AS total_users FROM users";
+    $totalUsersQuery = "SELECT COUNT(user_id) AS total_users FROM users where user_type=1";
     $totalUsersResult = mysqli_query($conn, $totalUsersQuery);
     $totalUsersRow = mysqli_fetch_assoc($totalUsersResult);
     $totalUsers = $totalUsersRow['total_users'];
