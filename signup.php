@@ -70,9 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         placeholder="Full Name" />
 
                     <input type="text" class="block border border-grey-light w-full p-3 rounded mb-4" name="email"
-                        placeholder="Email" />
+                        placeholder="Email" type="email" />
 
-                    <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
+                    <input type=" password" class="block border border-grey-light w-full p-3 rounded mb-4"
                         name="password" placeholder="Password" />
                     <input type="password" class="block border border-grey-light w-full p-3 rounded mb-4"
                         name="confirm_password" placeholder="Confirm Password" />

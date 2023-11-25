@@ -106,13 +106,11 @@
                 echo '<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    Category ID
-                                </th>
+                               
                                 <th scope="col" class="px-6 py-3">
                                     Category Name
                                 </th>
-                                <th>Open</th>
+                                <th>See Plants</th>
                                     <th>Update</th>
                                     <th>Delete</th>
                                     
@@ -121,14 +119,12 @@
 
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <td class="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                                        ' . $row['id'] . '
-                                    </td>
+                                   
                                     <td class="px-6 py-4">
                                         ' . $row['name'] . '
                                     </td>
                                     <td>
-                                    <button class="btn btn-success" onclick="openModal(\'modal_' . $row['id'] . '\')">see plants</button>
+                                    <button class="btn btn-success" onclick="openModal(\'modal_' . $row['id'] . '\')">Open</button>
                                     <dialog id="modal_' . $row['id'] . '" class="modal">
                                             <div class="modal-box">
                                                 <form method="dialog">
@@ -144,9 +140,7 @@
                                                 <table id="plantTable_' . $row['id'] . '" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                                         <tr>
-                                                            <th scope="col" class="px-6 py-3">
-                                                                Plant ID
-                                                            </th>
+                                                          
                                                             <th scope="col" class="px-6 py-3">
                                                                 Plant Name
                                                             </th>
@@ -162,12 +156,10 @@
                         
                                     while ($plantRow = mysqli_fetch_assoc($plantResult)) {
                                         echo '<tr>
-                                                <td>' . $plantRow['id'] . '</td>
                                                 <td>' . $plantRow['name'] . '</td>
                                                 <td>
                                                     <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
                                                         <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
-                                                        <input type="hidden" name="category_id" value="' . $row['id'] . '">
                                                         <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
                                                             Delete
                                                         </button>

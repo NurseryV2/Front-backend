@@ -18,7 +18,7 @@
     include("db.php");
 
     $query = "SELECT categories.id, categories.name, COUNT(plants.id) AS plant_count
-              FROM categories
+              FROM categories 
               LEFT JOIN plants ON categories.id = plants.category_id
               GROUP BY categories.id, categories.name";
 
