@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <nav class="relative px-4 py-4 flex justify-between items-center bg-white">
+    <nav class="relative px-4 py-4 flex justify-between items-center bg-gray-100">
         <div class="flex justify-center md:flex md:justify-start">
             <a class="text-3xl font-bold -mt-5 " href="#">
                 <svg class="h-10 transform rotate-180" alt="logo" viewBox="0 0 10240 10240">
