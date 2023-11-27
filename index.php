@@ -7,10 +7,24 @@ if (isset($_GET['category'])) {
     $categoryToShow = $_GET['category'];
 }
 
-// Query based on the selected category
 $sql = "SELECT * FROM plants WHERE category_id = (SELECT id FROM categories WHERE name = '$categoryToShow');";
 $result = $conn->query($sql);
+$matchingPlants = [];
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['plant_name'])) {
+        $plant_name = $_GET['plant_name'];
+
+        // Perform a simple query to find plants matching the provided name
+        $query = "SELECT * FROM plants WHERE name LIKE '%$plant_name%'";
+        $result = mysqli_query($conn, $query);
+
+        // Process and store matching plants
+        while ($row = mysqli_fetch_assoc($result)) {
+            $matchingPlants[] = $row;
+        }
+    } 
+}
 ?>
 <!doctype html>
 <html>
@@ -31,6 +45,7 @@ $result = $conn->query($sql);
         <?php       
         include("navbar.php");
         ?>
+
         <div class="max-w-screen-xl px-10 bg-transparent w-full h-screen py-10">
             <div class="backdrop-blur-sm bg-white w-full h-full p-10 mr-10 flex justify-around">
                 <img src="./images/6.jpg" alt="" class="h-screen w-auto -ml-16 -mt-10">
@@ -62,7 +77,7 @@ $result = $conn->query($sql);
             </svg>
             <h3 class="font-serif text-3xl mx-auto text-center mb-10">TRENDING PRODUCTS</h3>
         </div>
-        <div class=" flex justify-center items-center gap-4 my-5">
+        <div id="categories" class=" flex justify-center items-center gap-4 my-5">
 
             <a href="?category=house"
                 class=" border-2 border-solid bg-[#1f6200] opacity-1 border-gray-200 rounded-full w-32 h-8  flex items-center justify-center">
@@ -77,8 +92,28 @@ $result = $conn->query($sql);
                 <button class="text-gray-400 ">Love</button>
             </a>
         </div>
+        <div class="container mx-auto mt-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <?php foreach ($matchingPlants as $plant) : ?>
+                <div
+                    class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
+                    <a href="#">
+                        <img src="<?php echo $plant['image_url']; ?>" alt="Product"
+                            class="h-80 w-72 object-cover rounded-t-xl" />
+                        <div class="px-4 py-3 w-72">
+                            <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
+                            <p class="text-lg font-bold text-black truncate block capitalize">
+                                <?php echo $plant['name']; ?>
+                            </p>
 
-        <section id="categories"
+                        </div>
+
+                    </a>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <section
             class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
 
             <?php
@@ -104,13 +139,15 @@ $result = $conn->query($sql);
 
                                 </p>
                             </del>
-                            <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                    fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
+                            <div class="ml-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-bag-plus hover:text-green-500 duration-200" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd"
                                         d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
                                     <path
                                         d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg></div>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </a>
@@ -141,7 +178,7 @@ $result = $conn->query($sql);
         </div>
 
 
-        <section class="  text-gray-800 my-8 ">
+        <section id="blogs" class="  text-gray-800 my-8 ">
             <div class="container mx-auto space-y-8  ">
                 <div class=" gap-x-4 gap-y-8  flex justify-center items-center ">
                     <article
@@ -228,7 +265,7 @@ $result = $conn->query($sql);
         </section>
 
 
-        <main id="faq" class=" p-5 bg-light-blue">
+        <main id="faq" class=" p-5 bg-light-blue -mt-20">
             <div class="flex justify-center items-start my-2">
                 <div class="w-full sm:w-10/12 md:w-1/2 my-1">
                     <div class="flex flex-col items-center  mt-24">
@@ -423,7 +460,7 @@ $result = $conn->query($sql);
                             </div>
                             <div class="mx-auto mb-6 text-center md:mb-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="black" class="mx-auto mb-6 h-8 w-8 text-primary dark:text-primary-400">
+                                    stroke="black" class=" mx-auto mb-6 h-8 w-8 text-primary dark:text-primary-400">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                                 </svg>
@@ -483,9 +520,7 @@ $result = $conn->query($sql);
                     </div>
                 </div>
             </section>
-            <!-- Section: Design Block -->
         </div>
-        <!-- Container for demo purpose -->
         <footer class="bg-white dark:bg-gray-900">
             <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
                 <div class="md:flex md:justify-between">

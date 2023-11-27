@@ -29,11 +29,11 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-plant"])) {
         $plant_id_to_delete = mysqli_real_escape_string($conn, $_POST["plant_id"]);
         $category_id = mysqli_real_escape_string($conn, $_POST["category_id"]);
-    
+
         // Perform the deletion
         $deletePlantQuery = "DELETE FROM plants WHERE id = '$plant_id_to_delete' AND category_id = '$category_id'";
         $deletePlantResult = mysqli_query($conn, $deletePlantQuery);
-    
+
         // Check if the deletion was successful
         if ($deletePlantResult) {
             echo '<script>alert("Plant deleted successfully!");</script>';
@@ -41,19 +41,19 @@
             echo '<script>alert("Error deleting plant: ' . mysqli_error($conn) . '");</script>';
         }
     }
-    
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-category"])) {
         $category_id_to_delete = mysqli_real_escape_string($conn, $_POST["category_id"]);
-    
+
         // Delete plants associated with the category
         $deletePlantsQuery = "DELETE FROM plants WHERE category_id = '$category_id_to_delete'";
         $deletePlantsResult = mysqli_query($conn, $deletePlantsQuery);
-    
+
         if ($deletePlantsResult) {
             // Now, delete the category itself
             $deleteCategoryQuery = "DELETE FROM categories WHERE id = '$category_id_to_delete'";
             $deleteCategoryResult = mysqli_query($conn, $deleteCategoryQuery);
-    
+
             if ($deleteCategoryResult) {
                 echo '<script>alert("Category and associated plants deleted successfully!");</script>';
             } else {
@@ -63,7 +63,7 @@
             echo '<script>alert("Error deleting plants associated with the category: ' . mysqli_error($conn) . '");</script>';
         }
     }
-    
+
     ?>
     <div class="p-5 mt-14 sm:ml-64">
         <div class="relative overflow-x-auto sm:rounded-lg">
@@ -117,8 +117,8 @@
                         </thead>
                         <tbody>';
 
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                    
                                     <td class="px-6 py-4">
                                         ' . $row['name'] . '
@@ -148,14 +148,14 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>';
-                                        
-                            // Fetch plants data from the db with the corresponding category id
-                                    $categoryId = $row['id'];
-                                    $plantQuery = "SELECT id, name FROM plants WHERE category_id = $categoryId";
-                                    $plantResult = mysqli_query($conn, $plantQuery);
-                        
-                                    while ($plantRow = mysqli_fetch_assoc($plantResult)) {
-                                        echo '<tr>
+
+                    // Fetch plants data from the db with the corresponding category id
+                    $categoryId = $row['id'];
+                    $plantQuery = "SELECT id, name FROM plants WHERE category_id = $categoryId";
+                    $plantResult = mysqli_query($conn, $plantQuery);
+
+                    while ($plantRow = mysqli_fetch_assoc($plantResult)) {
+                        echo '<tr>
                                                 <td>' . $plantRow['name'] . '</td>
                                                 <td>
                                                     <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
@@ -166,10 +166,10 @@
                                                     </form>
                                                 </td>
                                             </tr>';
-                                    }
-                                    
-                                    
-            echo '</tbody>
+                    }
+
+
+                    echo '</tbody>
             </table>
         </div>
         </dialog>
@@ -184,13 +184,13 @@
     </form>
     </td>
             </tr>';
-            }
+                }
 
 
-            echo '</tbody>
+                echo '</tbody>
             </table>';
             } else {
-            echo '<p>No data found</p>';
+                echo '<p>No data found</p>';
             }
 
             mysqli_close($conn);
@@ -212,18 +212,18 @@
         </div>
     </div>
     <script>
-    function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        if (modal) {
-            modal.showModal();
+        function openModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.showModal();
+            }
         }
-    }
 
-    function toggleFormVisibility() {
-        var addCategoryForm = document.getElementById('addCategoryForm');
-        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-            '') ? 'block' : 'none';
-    }
+        function toggleFormVisibility() {
+            var addCategoryForm = document.getElementById('addCategoryForm');
+            addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+                '') ? 'block' : 'none';
+        }
     </script>
 
 </body>
