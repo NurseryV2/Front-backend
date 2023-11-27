@@ -1,7 +1,7 @@
 <?php
 include("db.php");
-include("cart.php");
-// session_start();
+// include("cart.php");
+    session_start();
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($_SESSION['LOGINEMAIL']) {
@@ -13,7 +13,7 @@ if ($_SESSION['LOGINEMAIL']) {
     $row = $SERRESULTU->fetch_assoc();
     $IDuser = $row["user_id"];
 }
-echo $IDuser;
+// echo $IDuser;
 
 $categoryToShow = "house";
 
@@ -22,7 +22,7 @@ if (isset($_GET['category'])) {
 }
 if (isset($_POST["basket"])) {
     $basket = $_POST["basket"];
-    echo $basket; // Insert into the basket table
+    // echo $basket; // Insert into the basket table
     $qBasket = $conn->prepare("INSERT INTO basket (user_id, plant_id) VALUES (?, ?)");
     $qBasket->bind_param("ii", $IDuser, $basket);
     $qBasket->execute();
