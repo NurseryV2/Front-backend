@@ -16,22 +16,27 @@
     include("./navbar.php");
     include("./sidebar.php");
     include("db.php");
+
+    // Handle adding a new category
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-category"])) {
         $categoryName = mysqli_real_escape_string($conn, $_POST["category-name"]);
         $insertQuery = "INSERT INTO categories (name) VALUES ('$categoryName')";
         $insertResult = mysqli_query($conn, $insertQuery);
+
         if ($insertResult) {
             echo '<script>alert("Category added successfully!");</script>';
         } else {
             echo '<script>alert("Error adding category: ' . mysqli_error($conn) . '");</script>';
         }
     }
+
+    // Handle deleting a plant
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-plant"])) {
-        $plant_id_to_delete = mysqli_real_escape_string($conn, $_POST["plant_id"]);
-        $category_id = mysqli_real_escape_string($conn, $_POST["category_id"]);
+        $plantIdToDelete = mysqli_real_escape_string($conn, $_POST["plant_id"]);
+        $categoryId = mysqli_real_escape_string($conn, $_POST["category_id"]);
 
         // Perform the deletion
-        $deletePlantQuery = "DELETE FROM plants WHERE id = '$plant_id_to_delete' AND category_id = '$category_id'";
+        $deletePlantQuery = "DELETE FROM plants WHERE id = '$plantIdToDelete' AND category_id = '$categoryId'";
         $deletePlantResult = mysqli_query($conn, $deletePlantQuery);
 
         // Check if the deletion was successful
@@ -42,16 +47,17 @@
         }
     }
 
+    // Handle deleting a category
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete-category"])) {
-        $category_id_to_delete = mysqli_real_escape_string($conn, $_POST["category_id"]);
+        $categoryIdToDelete = mysqli_real_escape_string($conn, $_POST["category_id"]);
 
         // Delete plants associated with the category
-        $deletePlantsQuery = "DELETE FROM plants WHERE category_id = '$category_id_to_delete'";
+        $deletePlantsQuery = "DELETE FROM plants WHERE category_id = '$categoryIdToDelete'";
         $deletePlantsResult = mysqli_query($conn, $deletePlantsQuery);
 
         if ($deletePlantsResult) {
             // Now, delete the category itself
-            $deleteCategoryQuery = "DELETE FROM categories WHERE id = '$category_id_to_delete'";
+            $deleteCategoryQuery = "DELETE FROM categories WHERE id = '$categoryIdToDelete'";
             $deleteCategoryResult = mysqli_query($conn, $deleteCategoryQuery);
 
             if ($deleteCategoryResult) {
@@ -64,7 +70,24 @@
         }
     }
 
+    // Handle updating a category
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update-category"])) {
+        $categoryIdToUpdate = mysqli_real_escape_string($conn, $_POST["category_id"]);
+        $updatedCategoryName = mysqli_real_escape_string($conn, $_POST["update-category-name"]);
+
+        // Perform the update
+        $updateCategoryQuery = "UPDATE categories SET name = '$updatedCategoryName' WHERE id = '$categoryIdToUpdate'";
+        $updateCategoryResult = mysqli_query($conn, $updateCategoryQuery);
+
+        if ($updateCategoryResult) {
+            echo '<script>alert("Category updated successfully!");</script>';
+        } else {
+            echo '<script>alert("Error updating category: ' . mysqli_error($conn) . '");</script>';
+        }
+    }
+
     ?>
+
     <div class="p-5 mt-14 sm:ml-64">
         <div class="relative overflow-x-auto sm:rounded-lg">
             <div
@@ -116,39 +139,35 @@
                                     
                         </thead>
                         <tbody>';
-
                 while ($row = mysqli_fetch_assoc($result)) {
+
+
                     echo '<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                   
-                                    <td class="px-6 py-4">
-                                        ' . $row['name'] . '
-                                    </td>
-                                    <td>
+                                <td class="px-6 py-4">' . $row['name'] . '</td>
+                                <td>
                                     <button class="btn btn-success" onclick="openModal(\'modal_' . $row['id'] . '\')">Open</button>
                                     <dialog id="modal_' . $row['id'] . '" class="modal">
-                                            <div class="modal-box">
-                                                <form method="dialog">
-                                                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal(' . $row['id'] . ')">✕</button>
-                                                </form>
-                                                <h3 class="font-bold text-lg text-center mx-auto">Plants in Category: ' . $row['name'] . '</h3>
-                                                <button type="submit"
-                                                class="mt-2 p-2.5 text-sm font-medium text-white ] rounded-lg border border-green-600 bg-[#2f9f5c] focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-green-500"
-                                                name="add-plant">
-                                                Add Plant
-                                             
-                                            </button>
-                                                <table id="plantTable_' . $row['id'] . '" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                                        <tr>
-                                                          
-                                                            <th scope="col" class="px-6 py-3">
-                                                                Plant Name
-                                                            </th>
-                                                            <th>Picture</th>
+                                        <div class="modal-box">
+                                            <form method="dialog">
+                                                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="closeModal(' . $row['id'] . ')">✕</button>
+                                            </form>
+                                            <h3 class="font-bold text-lg text-center mx-auto">Plants in Category: ' . $row['name'] . '</h3>
+                                            <a href="./add.php">
+                                            <button type="submit" class="mt-2 p-2.5 text-sm font-medium text-white rounded-lg border border-green-600 bg-[#2f9f5c] focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-green-500"
+                                            name="add-plant">
+                                            Add Plant
+                                        </button>
+                                            </a>
+                                         
+                                            <table id="plantTable_' . $row['id'] . '" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3">Plant Name</th>
+                                                        <th>Picture</th>
                                                         <th>Delete</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>';
+                                                    </tr>
+                                                </thead>
+                                                <tbody>';
 
                     // Fetch plants data from the db with the corresponding category id
                     $categoryId = $row['id'];
@@ -157,37 +176,49 @@
 
                     while ($plantRow = mysqli_fetch_assoc($plantResult)) {
                         echo '<tr>
-                                                <td>' . $plantRow['name'] . '</td>
+                                                        <td>' . $plantRow['name'] . '</td>
+                                                        <td>
+                                                            <img src="' . $plantRow['image_url'] . '" alt="Product" class="h-12 w-28 object-cover my-2" />
+                                                        </td>
+                                                        <td>
+                                                            <form method="post" action="">
+                                                                <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
+                                                                <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                                                                    Delete
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>';
+                    }
+
+                    // Add the form for updating the category here
+                    echo '<tr>
+                                                    <td colspan="3">
+
+                                                    </td>
+                                                </tr>';
+
+                    echo '</tbody></table></div></dialog></td>
+                                                <td class="border px-4 py-4">
+                                               <button onclick="toggleFormsVisibility()">update</button>
+                                                </td>
                                                 <td>
-
-                                                <img src="' . $plantRow['image_url'] . '" alt="Product" class="h-12  ,  w-28 object-cover  my-2" />
-
-
-            <td>
-                <form method="post" action="">
-                                                        <input type="hidden" name="plant_id" value="' . $plantRow['id']
-                    . '">
-                                                        <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                                                    <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
+                                                        <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                                                        <button type="submit" name="delete-category" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
                                                             Delete
                                                         </button>
                                                     </form>
                                                 </td>
-                                            </tr>' ; } echo '</tbody>
-            </table>
-        </div>
-        </dialog>
-        </td>
-        <td>Update</td>
-        <td>
-        <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
-        <input type="hidden" name="category_id" value="' . $row['id'] . '">
-        <button type="submit" name="delete-category" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
-            Delete
-        </button>
-    </form>
-    </td>
-            </tr>' ; } echo '</tbody>
-            </table>' ; } else { echo '<p>No data found</p>' ; } mysqli_close($conn); ?>
+                                            </tr>';
+                }
+
+                echo '</tbody></table>';
+            } else {
+                echo '<p>No data found</p>';
+            }
+            mysqli_close($conn);
+            ?>
             <div id="addCategoryForm" class="mt-4 hidden">
                 <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
                 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
@@ -202,22 +233,47 @@
                     </button>
                 </form>
             </div>
+            <div id="updateCategory" class="mt-4 hidden">
+                <h2 class="text-xl font-semibold mb-2">updateCategory</h2>
+                <form method="post" action="">
+                    <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                    <label for="update-category-name">Update Category Name:</label>
+                    <input type="text" id="update-category-name" name="update-category-name"
+                        value="' . $row['name'] . '" required>
+                    <button type="submit" name="update-category"
+                        class="mt-2 p-2.5 text-sm font-medium text-white bg-[#2F329F] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Update Category
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-    <script>
-    function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        if (modal) {
-            modal.showModal();
-        }
-    }
+</body>
 
-    function toggleFormVisibility() {
-        var addCategoryForm = document.getElementById('addCategoryForm');
-        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-            '') ? 'block' : 'none';
+</html>
+
+</div>';
+
+<script>
+function openModal(modalId) {
+    var modal = document.getElementById(modalId);
+    if (modal) {
+        modal.showModal();
     }
-    </script>
+}
+
+function toggleFormVisibility() {
+    var addCategoryForm = document.getElementById('addCategoryForm');
+    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+        '') ? 'block' : 'none';
+}
+
+function toggleFormsVisibility() {
+    var addCategoryForm = document.getElementById('updateCategory');
+    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+        '') ? 'block' : 'none';
+}
+</script>
 
 </body>
 
