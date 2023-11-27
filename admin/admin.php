@@ -144,6 +144,7 @@
                                                             <th scope="col" class="px-6 py-3">
                                                                 Plant Name
                                                             </th>
+                                                            <th>Picture</th>
                                                         <th>Delete</th>
                                                         </tr>
                                                     </thead>
@@ -151,25 +152,27 @@
 
                     // Fetch plants data from the db with the corresponding category id
                     $categoryId = $row['id'];
-                    $plantQuery = "SELECT id, name FROM plants WHERE category_id = $categoryId";
+                    $plantQuery = "SELECT * FROM plants WHERE category_id = $categoryId";
                     $plantResult = mysqli_query($conn, $plantQuery);
 
                     while ($plantRow = mysqli_fetch_assoc($plantResult)) {
                         echo '<tr>
                                                 <td>' . $plantRow['name'] . '</td>
                                                 <td>
-                                                    <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
-                                                        <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
+
+                                                <img src="' . $plantRow['image_url'] . '" alt="Product" class="h-12  ,  w-28 object-cover  my-2" />
+
+
+            <td>
+                <form method="post" action="">
+                                                        <input type="hidden" name="plant_id" value="' . $plantRow['id']
+                    . '">
                                                         <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
                                                             Delete
                                                         </button>
                                                     </form>
                                                 </td>
-                                            </tr>';
-                    }
-
-
-                    echo '</tbody>
+                                            </tr>' ; } echo '</tbody>
             </table>
         </div>
         </dialog>
@@ -183,18 +186,8 @@
         </button>
     </form>
     </td>
-            </tr>';
-                }
-
-
-                echo '</tbody>
-            </table>';
-            } else {
-                echo '<p>No data found</p>';
-            }
-
-            mysqli_close($conn);
-            ?>
+            </tr>' ; } echo '</tbody>
+            </table>' ; } else { echo '<p>No data found</p>' ; } mysqli_close($conn); ?>
             <div id="addCategoryForm" class="mt-4 hidden">
                 <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
                 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
@@ -212,18 +205,18 @@
         </div>
     </div>
     <script>
-        function openModal(modalId) {
-            var modal = document.getElementById(modalId);
-            if (modal) {
-                modal.showModal();
-            }
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.showModal();
         }
+    }
 
-        function toggleFormVisibility() {
-            var addCategoryForm = document.getElementById('addCategoryForm');
-            addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-                '') ? 'block' : 'none';
-        }
+    function toggleFormVisibility() {
+        var addCategoryForm = document.getElementById('addCategoryForm');
+        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+            '') ? 'block' : 'none';
+    }
     </script>
 
 </body>

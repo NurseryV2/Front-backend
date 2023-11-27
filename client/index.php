@@ -1,12 +1,22 @@
 <?php
 include("db.php");
+session_start();
+if ($_SESSION['LOGINEMAIL']) {
+    $email = $_SESSION['LOGINEMAIL'];
+    $query = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
+    $query->bind_param("s", $email);
+    $query->execute();
+    $result = $query->get_result();
+    $row = $result->fetch_assoc();
+    $IDuser = $row["user_id"];
+}
+echo $IDuser;
 
 $categoryToShow = "house";
 
 if (isset($_GET['category'])) {
     $categoryToShow = $_GET['category'];
 }
-
 $sql = "SELECT * FROM plants WHERE category_id = (SELECT id FROM categories WHERE name = '$categoryToShow');";
 $result = $conn->query($sql);
 $matchingPlants = [];
@@ -14,16 +24,20 @@ $matchingPlants = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['plant_name'])) {
         $plant_name = $_GET['plant_name'];
-
-        // Perform a simple query to find plants matching the provided name
         $query = "SELECT * FROM plants WHERE name LIKE '%$plant_name%'";
         $result = mysqli_query($conn, $query);
-
-        // Process and store matching plants
+        //  matching plants
         while ($row = mysqli_fetch_assoc($result)) {
             $matchingPlants[] = $row;
         }
-    } 
+    }
+}
+if (isset($_POST["basket"])) {
+
+    $basket = $_POST["basket"];
+    $query = $conn->prepare("INSERT INTO basket (user_id,plant_id) VALUES (?,?)");
+    $query->bind_param("ii", $IDuser, $basket);
+    $query->execute();
 }
 ?>
 <!doctype html>
@@ -42,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 <body>
     <div class="  bg-cover bg-center h-screen ">
 
-        <?php       
+        <?php
         include("navbar.php");
         ?>
 
@@ -94,22 +108,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         </div>
         <div class="container mx-auto mt-10">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <?php foreach ($matchingPlants as $plant) : ?>
-                <div
-                    class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="<?php echo $plant['image_url']; ?>" alt="Product"
-                            class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">
-                                <?php echo $plant['name']; ?>
-                            </p>
+                <?php foreach ($matchingPlants as $plant): ?>
+                    <div
+                        class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
+                        <a href="#">
+                            <img src="<?php echo $plant['image_url']; ?>" alt=" Product"
+                                class="h-80 w-72 object-cover rounded-t-xl" />
+                            <div class="px-4 py-3 w-72">
+                                <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
+                                <p class="text-lg font-bold text-black truncate block capitalize">
+                                    <?php echo $plant['name']; ?>
+                                </p>
 
-                        </div>
+                            </div>
 
-                    </a>
-                </div>
+                        </a>
+                    </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -117,49 +131,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
 
             <?php
-    while ($row = $result->fetch_assoc()) {
-        ?>
+            while ($row = $result->fetch_assoc()) {
+                ?>
 
-            <div class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
-                <a href="#">
-                    <img src="<?php echo $row['image_url']; ?>" alt="Product"
-                        class="h-80 w-72 object-cover rounded-t-xl" />
-                    <div class="px-4 py-3 w-72">
-                        <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
-                        <p class="text-lg font-bold text-black truncate block capitalize">
-                            <?php echo $row['name']; ?>
-                        </p>
-                        <div class="flex items-center">
-                            <p class="text-lg font-semibold text-black cursor-auto my-3">
-                                $<?php echo $row['price']; ?>
+                <div class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
+                    <a href="#">
+                        <img src="<?php echo $row['image_url']; ?>" alt=" Product"
+                            class="h-80 w-72 object-cover rounded-t-xl" />
+                        <div class="px-4 py-3 w-72">
+                            <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
+                            <p class="text-lg font-bold text-black truncate block capitalize">
+                                <?php echo $row['name']; ?>
                             </p>
-                            <del>
-                                <p class="text-sm text-gray-600 cursor-auto ml-2">
-                                    $<?php echo $row['discounted_price']; ?>
-
+                            <div class="flex items-center">
+                                <p class="text-lg font-semibold text-black cursor-auto my-3">
+                                    $
+                                    <?php echo $row['price']; ?>
                                 </p>
-                            </del>
-                            <div class="ml-auto">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                    class="bi bi-bag-plus hover:text-green-500 duration-200" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                    <path
-                                        d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                </svg>
+                                <del>
+                                    <p class="text-sm text-gray-600 cursor-auto ml-2">
+                                        $
+                                        <?php echo $row['discounted_price']; ?>
+
+                                    </p>
+                                </del>
+                                <div class="ml-auto">
+                                    <form action="" method="POST">
+                                        <button type="submit" name="basket" value="<?php echo $row['id']; ?>">
+                                            <svg xmlns=" http://www.w3.org/2000/svg" width="20" height="20"
+                                                fill="currentColor" class="bi bi-bag-plus hover:text-green-500 duration-200"
+                                                viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
+                                                <path
+                                                    d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
+                                            </svg>
+
+                                        </button>
+
+
+
+                                    </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
 
-            <?php
-    }
-    ?>
+                <?php
+            }
+            ?>
 
         </section>
         <!-- wedding cards -->
-        <div class="flex flex-col items-center">
+        <div class=" flex flex-col items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="54" height="55" viewBox="0 0 54 55" fill="none">
                 <path
                     d="M29.0935 35.5185C31.9938 27.8983 39.6288 24.1487 45.8454 23.1624C36.7386 27.8669 32.1935 32.8702 28.975 43.0516L30.8302 43.5109C31.3483 41.5312 32.0679 39.7423 32.9374 38.0939C39.2891 40.2052 45.0796 39.5651 49.7954 34.5328C55.6539 27.2587 53.7062 19.3641 51.2458 11.4286C48.9033 19.0689 35.8448 17.9149 30.9458 26.864C29.9115 28.753 29.0443 30.6118 28.3496 32.4997"
@@ -184,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     <article
                         class="flex flex-col bg-gray-50 swiper-slide w-72  shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
                         <a rel="noopener noreferrer" href="#" aria-label="Te nulla oportere reprimique his dolorum">
-                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="./images/9.jpg">
+                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="../images/9.jpg">
                         </a>
                         <div class="flex flex-col flex-1">
 
@@ -234,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     <article
                         class="flex flex-col bg-gray-50 swiper-slide w-72  shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
                         <a rel="noopener noreferrer" href="#" aria-label="Te nulla oportere reprimique his dolorum">
-                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="./images/9.jpg">
+                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="../images/9.jpg">
                         </a>
                         <div class="flex flex-col flex-1">
 
@@ -249,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         class="flex flex-col bg-gray-50 swiper-slide w-72  shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
 
                         <a rel="noopener noreferrer" href="#" aria-label="Te nulla oportere reprimique his dolorum">
-                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="./images/11.jpg">
+                            <img alt="" class="object-cover w-full h-52 bg-gray-500" src="../images/11.jpg">
                         </a>
                         <div class="flex flex-col flex-1">
                             <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-600">
@@ -301,8 +327,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <div x-ref="tab" :style="handleToggle()"
                                 class="border-l-2 border-green-600 overflow-hidden max-h-0 duration-500 transition-all">
                                 <p class="p-3 text-gray-900">
-                                    Shipping time is set by our delivery partners, according to the delivery method
-                                    chosen by you. Additional details can be found in the order confirmation
+                                    Shipping time is set by our delivery partners, according to the
+                                    delivery method
+                                    chosen by you. Additional details can be found in the order
+                                    confirmation
                                 </p>
                             </div>
                         </li>
@@ -321,7 +349,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <div class="border-l-2 border-green-600 overflow-hidden max-h-0 duration-500 transition-all"
                                 x-ref="tab" :style="handleToggle()">
                                 <p class="p-3 text-gray-900">
-                                    Once shipped, you’ll get a confirmation email that includes a tracking number
+                                    Once shipped, you’ll get a confirmation email that includes a
+                                    tracking number
                                     and additional information regarding tracking your order.
                                 </p>
                             </div>
@@ -341,8 +370,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <div class="border-l-2 border-green-600 overflow-hidden max-h-0 duration-500 transition-all"
                                 x-ref="tab" :style="handleToggle()">
                                 <p class="p-3 text-gray-900">
-                                    We allow the return of all items within 30 days of your original order’s date.
-                                    If you’re interested in returning your items, send us an email with your order
+                                    We allow the return of all items within 30 days of your original
+                                    order’s date.
+                                    If you’re interested in returning your items, send us an email
+                                    with your order
                                     number and we’ll ship a return label.
                                 </p>
                             </div>
@@ -362,10 +393,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <div class="border-l-2 border-green-600 overflow-hidden max-h-0 duration-500 transition-all"
                                 x-ref="tab" :style="handleToggle()">
                                 <p class="p-3 text-gray-900">
-                                    Changes to an existing order can be made as long as the order is still in
-                                    “processing” status. Please contact our team via email and we’ll make sure to
-                                    apply the needed changes. If your order has already been shipped, we cannot
-                                    apply any changes to it. If you are unhappy with your order when it arrives,
+                                    Changes to an existing order can be made as long as the order is
+                                    still in
+                                    “processing” status. Please contact our team via email and we’ll
+                                    make sure to
+                                    apply the needed changes. If your order has already been
+                                    shipped, we cannot
+                                    apply any changes to it. If you are unhappy with your order when
+                                    it arrives,
                                     please contact us for any changes you may require.
                                 </p>
                             </div>
@@ -404,7 +439,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <div class="border-l-2 border-green-600 overflow-hidden max-h-0 duration-500 transition-all"
                                 x-ref="tab" :style="handleToggle()">
                                 <p class="p-3 text-gray-900">
-                                    Any method of payments acceptable by you. For example: We accept MasterCard,
+                                    Any method of payments acceptable by you. For example: We accept
+                                    MasterCard,
                                     Visa, American Express, PayPal, JCB Discover, Gift Cards, etc.
                                 </p>
                             </div>
@@ -433,7 +469,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         <div id="contact" class="container my-24 mx-auto md:px-6">
             <section class="mb-32">
                 <div
-                    class="relative h-[300px] overflow-hidden bg-cover bg-[50%] bg-no-repeat bg-[url('./images/mn.jpg')]">
+                    class="relative h-[300px] overflow-hidden bg-cover bg-[50%] bg-no-repeat bg-[url('../images/mn.jpg')]">
                 </div>
                 <div class="container px-6 md:px-12">
                     <div
@@ -541,7 +577,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             </ul>
                         </div>
                         <div>
-                            <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Legal
+                            <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                                Legal
                             </h2>
                             <ul class="text-gray-500 dark:text-gray-400 font-medium">
                                 <li class="mb-4">
@@ -556,8 +593,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 </div>
                 <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
                 <div class="sm:flex sm:items-center sm:justify-between">
-                    <span class="text-sm text-gray-500 text-center dark:text-gray-400 mx-auto">© 2023 <a href=""
-                            class="hover:underline">Hariti</a>. All Rights Reserved.
+                    <span class="text-sm text-gray-500 text-center dark:text-gray-400 mx-auto">©
+                        2023 <a href="" class="hover:underline">Hariti</a>. All Rights Reserved.
                     </span>
                     <div class="flex mt-4 sm:justify-center sm:mt-0">
                         <a href="#" class="text-gray-500 hover:text-gray-900 dark:hover:text-white">
@@ -612,85 +649,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 
         <?php
-$conn->close();
-?>
+        $conn->close();
+        ?>
 
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const button = document.getElementById('navbar-toggle');
-            const searchButton = document.getElementById('search-toggle');
-            const menu = document.getElementById('navbar-search');
+            document.addEventListener('DOMContentLoaded', function () {
+                const button = document.getElementById('navbar-toggle');
+                const searchButton = document.getElementById('search-toggle');
+                const menu = document.getElementById('navbar-search');
 
-            searchButton.addEventListener('click', function() {
-                menu.classList.toggle('hidden');
+                searchButton.addEventListener('click', function () {
+                    menu.classList.toggle('hidden');
+                });
+
+                button.addEventListener('click', function () {
+                    menu.classList.toggle('hidden');
+                });
             });
+            document.addEventListener('DOMContentLoaded', function () {
+                // open
+                const burger = document.querySelectorAll('.navbar-burger');
+                const menu = document.querySelectorAll('.navbar-menu');
 
-            button.addEventListener('click', function() {
-                menu.classList.toggle('hidden');
+                if (burger.length && menu.length) {
+                    for (var i = 0; i < burger.length; i++) {
+                        burger[i].addEventListener('click', function () {
+                            for (var j = 0; j < menu.length; j++) {
+                                menu[j].classList.toggle('hidden');
+                            }
+                        });
+                    }
+                }
+
+                // close
+                const close = document.querySelectorAll('.navbar-close');
+                const backdrop = document.querySelectorAll('.navbar-backdrop');
+
+                if (close.length) {
+                    for (var i = 0; i < close.length; i++) {
+                        close[i].addEventListener('click', function () {
+                            for (var j = 0; j < menu.length; j++) {
+                                menu[j].classList.toggle('hidden');
+                            }
+                        });
+                    }
+                }
+
+                if (backdrop.length) {
+                    for (var i = 0; i < backdrop.length; i++) {
+                        backdrop[i].addEventListener('click', function () {
+                            for (var j = 0; j < menu.length; j++) {
+                                menu[j].classList.toggle('hidden');
+                            }
+                        });
+                    }
+                }
             });
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            // open
-            const burger = document.querySelectorAll('.navbar-burger');
-            const menu = document.querySelectorAll('.navbar-menu');
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('accordion', {
+                    tab: 0
+                });
 
-            if (burger.length && menu.length) {
-                for (var i = 0; i < burger.length; i++) {
-                    burger[i].addEventListener('click', function() {
-                        for (var j = 0; j < menu.length; j++) {
-                            menu[j].classList.toggle('hidden');
-                        }
-                    });
-                }
-            }
-
-            // close
-            const close = document.querySelectorAll('.navbar-close');
-            const backdrop = document.querySelectorAll('.navbar-backdrop');
-
-            if (close.length) {
-                for (var i = 0; i < close.length; i++) {
-                    close[i].addEventListener('click', function() {
-                        for (var j = 0; j < menu.length; j++) {
-                            menu[j].classList.toggle('hidden');
-                        }
-                    });
-                }
-            }
-
-            if (backdrop.length) {
-                for (var i = 0; i < backdrop.length; i++) {
-                    backdrop[i].addEventListener('click', function() {
-                        for (var j = 0; j < menu.length; j++) {
-                            menu[j].classList.toggle('hidden');
-                        }
-                    });
-                }
-            }
-        });
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('accordion', {
-                tab: 0
-            });
-
-            Alpine.data('accordion', (idx) => ({
-                init() {
-                    this.idx = idx;
-                },
-                idx: -1,
-                handleClick() {
-                    this.$store.accordion.tab = this.$store.accordion.tab === this.idx ? 0 : this
-                        .idx;
-                },
-                handleRotate() {
-                    return this.$store.accordion.tab === this.idx ? 'rotate-180' : '';
-                },
-                handleToggle() {
-                    return this.$store.accordion.tab === this.idx ?
-                        `max-height: ${this.$refs.tab.scrollHeight}px` : '';
-                }
-            }));
-        })
+                Alpine.data('accordion', (idx) => ({
+                    init() {
+                        this.idx = idx;
+                    },
+                    idx: -1,
+                    handleClick() {
+                        this.$store.accordion.tab = this.$store.accordion.tab ===
+                            this.idx ? 0 : this
+                            .idx;
+                    },
+                    handleRotate() {
+                        return this.$store.accordion.tab === this.idx ?
+                            'rotate-180' : '';
+                    },
+                    handleToggle() {
+                        return this.$store.accordion.tab === this.idx ?
+                            `max-height: ${this.$refs.tab.scrollHeight}px` : '';
+                    }
+                }));
+            })
         </script>
 </body>
 

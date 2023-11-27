@@ -26,6 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Internal Server Error");
     }
 
+    session_start();
+    $_SESSION['LOGINEMAIL'] = $email;
+
     if ($result->num_rows > 0) {
         header("Location: index.php");
         exit;
