@@ -55,15 +55,15 @@
                 </div>
 
             </form>
-            <a href="shoppingCart.php" class="relative">
+            <a href="./cart.php" class="relative">
                 <p
                     class="text-xl text-red absolute top-0 start-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500 px-0.5 py-0.5 ">
                     <?php
 
                     $query = $conn->prepare("SELECT user_id FROM basket WHERE user_id=$IDuser");
                     $query->execute();
-                    $result = $query->get_result();
-                    $row = $result->num_rows;
+                    $resultT = $query->get_result();
+                    $row = $resultT->num_rows;
                     echo $row;
                     ?>
 

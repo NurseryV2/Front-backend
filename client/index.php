@@ -1,13 +1,16 @@
 <?php
 include("db.php");
-session_start();
+include("cart.php");
+// session_start();
+$conn = new mysqli($servername, $username, $password, $dbname);
+
 if ($_SESSION['LOGINEMAIL']) {
     $email = $_SESSION['LOGINEMAIL'];
     $query = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
     $query->bind_param("s", $email);
     $query->execute();
-    $result = $query->get_result();
-    $row = $result->fetch_assoc();
+    $SERRESULTU = $query->get_result();
+    $row = $SERRESULTU->fetch_assoc();
     $IDuser = $row["user_id"];
 }
 echo $IDuser;
@@ -17,6 +20,16 @@ $categoryToShow = "house";
 if (isset($_GET['category'])) {
     $categoryToShow = $_GET['category'];
 }
+if (isset($_POST["basket"])) {
+    $basket = $_POST["basket"];
+    echo $basket; // Insert into the basket table
+    $qBasket = $conn->prepare("INSERT INTO basket (user_id, plant_id) VALUES (?, ?)");
+    $qBasket->bind_param("ii", $IDuser, $basket);
+    $qBasket->execute();
+
+
+}
+
 $sql = "SELECT * FROM plants WHERE category_id = (SELECT id FROM categories WHERE name = '$categoryToShow');";
 $result = $conn->query($sql);
 $matchingPlants = [];
@@ -26,19 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $plant_name = $_GET['plant_name'];
         $query = "SELECT * FROM plants WHERE name LIKE '%$plant_name%'";
         $result = mysqli_query($conn, $query);
-        //  matching plants
         while ($row = mysqli_fetch_assoc($result)) {
             $matchingPlants[] = $row;
         }
     }
 }
-if (isset($_POST["basket"])) {
 
-    $basket = $_POST["basket"];
-    $query = $conn->prepare("INSERT INTO basket (user_id,plant_id) VALUES (?,?)");
-    $query->bind_param("ii", $IDuser, $basket);
-    $query->execute();
-}
 ?>
 <!doctype html>
 <html>
@@ -62,7 +68,7 @@ if (isset($_POST["basket"])) {
 
         <div class="max-w-screen-xl px-10 bg-transparent w-full h-screen py-10">
             <div class="backdrop-blur-sm bg-white w-full h-full p-10 mr-10 flex justify-around">
-                <img src="./images/6.jpg" alt="" class="h-screen w-auto -ml-16 -mt-10">
+                <img src="../images/6.jpg" alt="" class="h-screen w-auto -ml-16 -mt-10">
                 <div class="flex flex-col items-center justify-center">
                     <p class="font-semibold text-3xl lg:text-5xl xl:text-6xl text-black">PLANTS AND FLOWERS</p>
                     <span class="text-sm text-[#3c7b04] py-2">YOU THINK WE DESIGN</span>
@@ -109,21 +115,21 @@ if (isset($_POST["basket"])) {
         <div class="container mx-auto mt-10">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <?php foreach ($matchingPlants as $plant): ?>
-                    <div
-                        class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
-                        <a href="#">
-                            <img src="<?php echo $plant['image_url']; ?>" alt=" Product"
-                                class="h-80 w-72 object-cover rounded-t-xl" />
-                            <div class="px-4 py-3 w-72">
-                                <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
-                                <p class="text-lg font-bold text-black truncate block capitalize">
-                                    <?php echo $plant['name']; ?>
-                                </p>
+                <div
+                    class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
+                    <a href="#">
+                        <img src="<?php echo $plant['image_url']; ?>" alt=" Product"
+                            class="h-80 w-72 object-cover rounded-t-xl" />
+                        <div class="px-4 py-3 w-72">
+                            <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
+                            <p class="text-lg font-bold text-black truncate block capitalize">
+                                <?php echo $plant['name']; ?>
+                            </p>
 
-                            </div>
+                        </div>
 
-                        </a>
-                    </div>
+                    </a>
+                </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -134,52 +140,52 @@ if (isset($_POST["basket"])) {
             while ($row = $result->fetch_assoc()) {
                 ?>
 
-                <div class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="<?php echo $row['image_url']; ?>" alt=" Product"
-                            class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">
-                                <?php echo $row['name']; ?>
+            <div class="swiper-slide w-72 bg-white shadow-md rounded-md duration-500 hover:scale-105 hover:shadow-xl">
+                <a href="#">
+                    <img src="<?php echo $row['image_url']; ?>" alt=" Product"
+                        class="h-80 w-72 object-cover rounded-t-xl" />
+                    <div class="px-4 py-3 w-72">
+                        <span class="text-gray-400 mr-3 uppercase text-xs">Nursery</span>
+                        <p class="text-lg font-bold text-black truncate block capitalize">
+                            <?php echo $row['name']; ?>
+                        </p>
+                        <div class="flex items-center">
+                            <p class="text-lg font-semibold text-black cursor-auto my-3">
+                                $
+                                <?php echo $row['price']; ?>
                             </p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">
+                            <del>
+                                <p class="text-sm text-gray-600 cursor-auto ml-2">
                                     $
-                                    <?php echo $row['price']; ?>
+                                    <?php echo $row['discounted_price']; ?>
+
                                 </p>
-                                <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">
-                                        $
-                                        <?php echo $row['discounted_price']; ?>
+                            </del>
+                            <div class="ml-auto">
+                                <form action="" method="POST">
+                                    <button type="submit" name="basket" value="<?php echo $row['id']; ?>">
+                                        <svg xmlns=" http://www.w3.org/2000/svg" width="20" height="20"
+                                            fill="currentColor" class="bi bi-bag-plus hover:text-green-500 duration-200"
+                                            viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
+                                            <path
+                                                d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
+                                        </svg>
 
-                                    </p>
-                                </del>
-                                <div class="ml-auto">
-                                    <form action="" method="POST">
-                                        <button type="submit" name="basket" value="<?php echo $row['id']; ?>">
-                                            <svg xmlns=" http://www.w3.org/2000/svg" width="20" height="20"
-                                                fill="currentColor" class="bi bi-bag-plus hover:text-green-500 duration-200"
-                                                viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd"
-                                                    d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                                <path
-                                                    d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                            </svg>
-
-                                        </button>
+                                    </button>
 
 
 
-                                    </form>
-                                    </form>
-                                </div>
+                                </form>
+                                </form>
                             </div>
                         </div>
-                    </a>
-                </div>
+                    </div>
+                </a>
+            </div>
 
-                <?php
+            <?php
             }
             ?>
 
@@ -653,83 +659,83 @@ if (isset($_POST["basket"])) {
         ?>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const button = document.getElementById('navbar-toggle');
-                const searchButton = document.getElementById('search-toggle');
-                const menu = document.getElementById('navbar-search');
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('navbar-toggle');
+            const searchButton = document.getElementById('search-toggle');
+            const menu = document.getElementById('navbar-search');
 
-                searchButton.addEventListener('click', function () {
-                    menu.classList.toggle('hidden');
-                });
-
-                button.addEventListener('click', function () {
-                    menu.classList.toggle('hidden');
-                });
+            searchButton.addEventListener('click', function() {
+                menu.classList.toggle('hidden');
             });
-            document.addEventListener('DOMContentLoaded', function () {
-                // open
-                const burger = document.querySelectorAll('.navbar-burger');
-                const menu = document.querySelectorAll('.navbar-menu');
 
-                if (burger.length && menu.length) {
-                    for (var i = 0; i < burger.length; i++) {
-                        burger[i].addEventListener('click', function () {
-                            for (var j = 0; j < menu.length; j++) {
-                                menu[j].classList.toggle('hidden');
-                            }
-                        });
-                    }
-                }
-
-                // close
-                const close = document.querySelectorAll('.navbar-close');
-                const backdrop = document.querySelectorAll('.navbar-backdrop');
-
-                if (close.length) {
-                    for (var i = 0; i < close.length; i++) {
-                        close[i].addEventListener('click', function () {
-                            for (var j = 0; j < menu.length; j++) {
-                                menu[j].classList.toggle('hidden');
-                            }
-                        });
-                    }
-                }
-
-                if (backdrop.length) {
-                    for (var i = 0; i < backdrop.length; i++) {
-                        backdrop[i].addEventListener('click', function () {
-                            for (var j = 0; j < menu.length; j++) {
-                                menu[j].classList.toggle('hidden');
-                            }
-                        });
-                    }
-                }
+            button.addEventListener('click', function() {
+                menu.classList.toggle('hidden');
             });
-            document.addEventListener('alpine:init', () => {
-                Alpine.store('accordion', {
-                    tab: 0
-                });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // open
+            const burger = document.querySelectorAll('.navbar-burger');
+            const menu = document.querySelectorAll('.navbar-menu');
 
-                Alpine.data('accordion', (idx) => ({
-                    init() {
-                        this.idx = idx;
-                    },
-                    idx: -1,
-                    handleClick() {
-                        this.$store.accordion.tab = this.$store.accordion.tab ===
-                            this.idx ? 0 : this
-                            .idx;
-                    },
-                    handleRotate() {
-                        return this.$store.accordion.tab === this.idx ?
-                            'rotate-180' : '';
-                    },
-                    handleToggle() {
-                        return this.$store.accordion.tab === this.idx ?
-                            `max-height: ${this.$refs.tab.scrollHeight}px` : '';
-                    }
-                }));
-            })
+            if (burger.length && menu.length) {
+                for (var i = 0; i < burger.length; i++) {
+                    burger[i].addEventListener('click', function() {
+                        for (var j = 0; j < menu.length; j++) {
+                            menu[j].classList.toggle('hidden');
+                        }
+                    });
+                }
+            }
+
+            // close
+            const close = document.querySelectorAll('.navbar-close');
+            const backdrop = document.querySelectorAll('.navbar-backdrop');
+
+            if (close.length) {
+                for (var i = 0; i < close.length; i++) {
+                    close[i].addEventListener('click', function() {
+                        for (var j = 0; j < menu.length; j++) {
+                            menu[j].classList.toggle('hidden');
+                        }
+                    });
+                }
+            }
+
+            if (backdrop.length) {
+                for (var i = 0; i < backdrop.length; i++) {
+                    backdrop[i].addEventListener('click', function() {
+                        for (var j = 0; j < menu.length; j++) {
+                            menu[j].classList.toggle('hidden');
+                        }
+                    });
+                }
+            }
+        });
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('accordion', {
+                tab: 0
+            });
+
+            Alpine.data('accordion', (idx) => ({
+                init() {
+                    this.idx = idx;
+                },
+                idx: -1,
+                handleClick() {
+                    this.$store.accordion.tab = this.$store.accordion.tab ===
+                        this.idx ? 0 : this
+                        .idx;
+                },
+                handleRotate() {
+                    return this.$store.accordion.tab === this.idx ?
+                        'rotate-180' : '';
+                },
+                handleToggle() {
+                    return this.$store.accordion.tab === this.idx ?
+                        `max-height: ${this.$refs.tab.scrollHeight}px` : '';
+                }
+            }));
+        })
         </script>
 </body>
 
