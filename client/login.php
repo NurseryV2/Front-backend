@@ -34,10 +34,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     } else {
         echo "No user found with the provided email and password";
-        header("Location: index.php");
+        header("Location: whos.php");
     }
 
-    // User does not exist or password is incorrect, redirect to login page
     exit;
 }
 ?>

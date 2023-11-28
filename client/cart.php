@@ -2,86 +2,109 @@
 include("db.php");
 session_start();
 $email = $_SESSION['LOGINEMAIL'];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['increase'])) {
-        $plantid = $_POST['plantId'];
-    } elseif (isset($_POST['decrease'])) {
-        $plantid = $_POST['plantId'];
-    } elseif (isset($_POST['remove'])) {
-        $plantid = $_POST['plantId'];
-        $removeQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ? ");
-        $removeQuery->bind_param("i", $userid);
-        $removeQuery->execute();
-        $removeQuery->close();
-    } elseif (isset($_POST['checkout'])) {
-        // Handle checkout logic (delete everything from the basket)
-        $checkoutQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ?");
-        $checkoutQuery->bind_param("i", $userid);
-        $checkoutQuery->execute();
-        $checkoutQuery->close();
-    }
-}
-
 $userQuery = "SELECT user_id FROM users WHERE email = '$email'";
 $userResult = mysqli_query($conn, $userQuery);
+$row = mysqli_fetch_assoc($userResult);
+$userid = $row['user_id'];
 
-if ($userResult) {
-    $row = mysqli_fetch_assoc($userResult);
-    $userid = $row['user_id'];
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     if (isset($_POST['increase'])) {
+//         $plantid = $_POST['plantId'];
+//     } elseif (isset($_POST['decrease'])) {
+//         $plantid = $_POST['plantId'];
+//     } elseif (isset($_POST['remove'])) {
+//         $plantid = $_POST['plantId'];
+//         $removeQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ? ");
+//         $removeQuery->bind_param("i", $userid);
+//         $removeQuery->execute();
+//         $removeQuery->close();
+//     } elseif (isset($_POST['checkout'])) {
+//         // Handle checkout logic (delete everything from the basket)
+//         $checkoutQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ?");
+//         $checkoutQuery->bind_param("i", $userid);
+//         $checkoutQuery->execute();
+//         $checkoutQuery->close();
+//     }
+// }
 
-    $basketQuery = $conn->prepare("SELECT plant_id, COUNT(*) as quantity FROM basket WHERE user_id = ? GROUP BY plant_id");
-    $basketQuery->bind_param("i", $userid);
-    $basketQuery->execute();
-    $results = $basketQuery->get_result();
+if (isset($_POST['checkout'])) {
 
-    while ($row = $results->fetch_assoc()) {
-        $plantid = $row['plant_id'];
-        $quantity = $row['quantity'];
 
-        // Retrieve plant information from the 'plants' table (adjust the column names as needed)
-        $plantInfoQuery = "SELECT * FROM plants WHERE id = $plantid";
-        $plantInfoResult = mysqli_query($conn, $plantInfoQuery);
+    if ($userResult) {
 
-        if ($plantInfoResult) {
-            $plantInfo = mysqli_fetch_assoc($plantInfoResult);
-            // Display the plant card with image on the left and quantity
-            echo '<form method="post" action="">
-                    <div class="flex max-w-2xl bg-white shadow-md rounded-lg overflow-hidden my-4 mx-4">
-                        <div class="w-1/3">
-                            <img class="w-full h-auto object-cover" src="' . $plantInfo['image_url'] . '" alt="' . $plantInfo['name'] . '">
-                        </div>
-                        <div class="w-2/3 p-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <div class="font-bold text-xl">' . $plantInfo['name'] . '</div>
-                                <div class="flex items-center">
-                                    <button class="text-gray-500 hover:text-gray-700" type="submit" name="decrease" value="1"><input type="hidden" name="plantId" value="' . $plantid . '">-</button>
-                                    <span class="mx-2">' . $quantity . '</span>
-                                    <button class="text-gray-500 hover:text-gray-700" type="submit" name="increase" value="1"><input type="hidden" name="plantId" value="' . $plantid . '">+</button>
-                                </div>
-                                <button class="text-red-500 hover:text-red-700 cursor-pointer" type="submit" name="remove" value="1"><input type="hidden" name="plantId" value="' . $plantid . '">&times;</button>
-                            </div>
-                            <p class="text-gray-700 text-base">' . $plantInfo['description'] . '</p>
-                        </div>
-                    </div>
-                </form>';
+        $basketQuery = $conn->prepare("SELECT plant_id, COUNT(*) as quantity FROM basket WHERE user_id = ? GROUP BY plant_id");
+        $basketQuery->bind_param("i", $userid);
+        $basketQuery->execute();
+        $results = $basketQuery->get_result();
+
+        while ($row = $results->fetch_assoc()) {
+            $plantid = $row['plant_id'];
+
+
+            $commandQuery = $conn->prepare("INSERT INTO commands(user_id,plant_id) VALUES(?,?)");
+            $commandQuery->bind_param("ii", $userid, $plantid);
+            $commandQuery->execute();
         }
+        $delete_basket = $conn->prepare("DELETE from basket where user_id =?");
+        $delete_basket->bind_param("i", $userid);
+        $delete_basket->execute();
     }
 
-    echo '<form method="post" action="">
-            <div class="flex justify-center mt-4">
-                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" type="submit" name="checkout" value="checkout">Checkout</button>
-            </div>
-          </form>';
-
-    $basketQuery->close();
-} else {
-    echo "Error retrieving user information: " . mysqli_error($conn);
 }
 
-mysqli_close($conn);
+
+// $basketQuery = $conn->prepare("SELECT plant_id, COUNT(*) as quantity FROM basket WHERE user_id = ? GROUP BY plant_id");
+// $basketQuery->bind_param("i", $userid);
+// $basketQuery->execute();
+// $results = $basketQuery->get_result();
+
+// while ($row = $results->fetch_assoc()) {
+//     $plantid = $row['plant_id'];
+//     $quantity = $row['quantity'];
+//     $commandQuery->execute();
+
+//     // Retrieve plant information from the 'plants' table (adjust the column names as needed)
+//     $plantInfoQuery = "SELECT * FROM plants WHERE id = $plantid";
+//     $plantInfoResult = mysqli_query($conn, $plantInfoQuery);
+
+//     while ($plantInfo = mysqli_fetch_assoc($plantInfoResult)) {
+
+//         // Display the plant card with image on the left and quantity
+//         echo '<form method="post" action="">
+//                     <div class="flex max-w-2xl bg-white shadow-md rounded-lg overflow-hidden my-4 mx-4">
+//                         <div class="w-1/3">
+//                             <img class="w-full h-auto object-cover" src="' . $plantInfo['image_url'] . '" alt="' . $plantInfo['name'] . '">
+//                         </div>
+//                         <div class="w-2/3 p-4">
+//                             <div class="flex justify-between items-center mb-2">
+//                                 <div class="font-bold text-xl">' . $plantInfo['name'] . '</div>
+//                                 <div class="flex items-center">
+//                                     <button class="text-gray-500 hover:text-gray-700" type="submit" name="decrease" value="1"><input type="hidden" name="plantId" value="' . $plantid . '">-</button>
+//                                     <span class="mx-2">' . $quantity . '</span>
+//                                     <button class="text-gray-500 hover:text-gray-700" type="submit" name="increase" value="1"><input type="hidden" name="plantId" value="' . $plantid . '">+</button>
+//                                 </div>
+//                                 <button class="text-red-500 hover:text-red-700 cursor-pointer" type="submit" name="remove" value="1"><input type="hidden" name="plantId" value="' . $plantid . '">&times;</button>
+//                             </div>
+//                             <p class="text-gray-700 text-base">' . $plantInfo['description'] . '</p>
+//                         </div>
+//                     </div>
+//                 </form>';
+//     }
+
+
+//     echo '<form method="post" action="">
+//             <div class="flex justify-center mt-4">
+//                 <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" type="submit" name="checkout" value="checkout">Checkout</button>
+//             </div>
+//           </form>';
+
+//     $basketQuery->close();
+// }
+
+
+// mysqli_close($conn);
 ?>
->
+
 
 
 <!DOCTYPE html>
@@ -99,6 +122,54 @@ mysqli_close($conn);
 
 <body>
 
+    <?php
+    $select = "SELECT * 
+    FROM basket
+    JOIN plants ON plants.id = basket.plant_id
+    WHERE user_id = $userid";
+    $query = mysqli_query($conn, $select);
+
+    while ($plantInfo = mysqli_fetch_assoc($query)) {
+        ?>
+    <form method="post" action="">
+        <div class="flex max-w-2xl bg-white shadow-md rounded-lg overflow-hidden my-4 mx-4">
+            <div class="w-1/3">
+                <img class="w-full h-auto object-cover" src="<?php echo $plantInfo['image_url'] ?>"
+                    alt="<?php $plantInfo['name'] ?>">
+            </div>
+            <div class="w-2/3 p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="font-bold text-xl">
+                        <?php echo $plantInfo['name'] ?>
+                        <div class="flex items-center">
+                            <button class="text-gray-500 hover:text-gray-700" type="submit" name="decrease"
+                                value="1"><input type="hidden" name="plantId" value="' . $plantid . '">-</button>
+                            <span class="mx-2">
+                                <?php echo "quantity" ?>
+                            </span>
+                            <button class="text-gray-500 hover:text-gray-700" type="submit" name="increase"
+                                value="1"><input type="hidden" name="plantId" value="' . $plantid . '">+</button>
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 cursor-pointer" type="submit" name="remove"
+                            value="1"><input type="hidden" name="plantId" value="' . $plantid . '">&times;</button>
+                    </div>
+                    <p class="text-gray-700 text-base">
+                        <?php echo $plantInfo['price'] ?>
+                    </p>
+                </div>
+            </div>
+    </form>
+
+    <?php
+    }
+
+    ?>
+    <form method="post" action="">
+        <div class="flex justify-center mt-4">
+            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" type="submit"
+                name="checkout" value="checkout">Checkout</button>
+        </div>
+    </form>
 </body>
 
 </html>

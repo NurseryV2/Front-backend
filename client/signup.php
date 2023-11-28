@@ -29,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Bind parameters and execute the statement
         $stmt->bind_param("sss", $fullname, $email, $hashed_password);
         $stmt->execute();
-
         if ($stmt->affected_rows > 0) {
             // Registration successful, redirect to login page
             header("Location: whos.php");

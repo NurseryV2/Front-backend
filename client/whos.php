@@ -1,58 +1,40 @@
 <?php
 // update_user_type.php
-
+include("db.php");
 // Start the session (add this at the beginning of your file)
 session_start();
+$email = $_SESSION['LOGINEMAIL'];
+$select = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$select->bind_param("s", $email);
+$select->execute();
+$result = $select->get_result();
+$row = $result->fetch_assoc();
+$iduser = $row['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     include("db.php");
 
     // Get selected role
     $role = $_POST["role"];
+    echo $role;
 
     // Get the user_id dynamically from the session variable
-    $user_id = isset($_SESSION["user_id"]) ? $_SESSION["user_id"] : null;
 
-    // Check if the user_id is set and not null
-    if (!$user_id) {
-        die("User not found. Please make sure you are logged in.");
-    }
+    echo $iduser;
 
-    // Check if the user has selected a role
-    if (empty($role)) {
-        die("Please select a role.");
-    }
-
-    // Use prepared statement to prevent SQL injection
     $update_query = "UPDATE users SET user_type = ? WHERE user_id = ?";
     $stmt = $conn->prepare($update_query);
-
-    if ($stmt === false) {
-        die("Error in statement preparation: " . $conn->error);
-    }
-
-    // Bind parameters and execute the statement
-    $stmt->bind_param("ii", $role, $user_id);
+    $stmt->bind_param("ii", $role, $iduser);
     $stmt->execute();
 
-    // Check for errors during execution
-    if ($stmt->errno) {
-        die("Error executing statement: " . $stmt->error);
+    if ($row['user_type'] == 1) {
+        header("location: ./client/index.php");
+        exit();
+    }
+    elseif($row['user_type']== 2) {
+        header("location: ../admin/admin.php");
     }
 
-    // Check if any rows were affected
-    if ($stmt->affected_rows > 0) {
-        echo "User type updated successfully!";
-    } else {
-        echo "No changes made or user not found.";
-    }
-
-    // Close the statement
-    $stmt->close();
-
-    // Close the database connection
-    $conn->close();
-    exit; // Important to stop further execution
 }
 ?>
 
