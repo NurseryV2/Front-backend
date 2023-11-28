@@ -72,14 +72,16 @@
 
     // Handle updating a category
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update-category"])) {
-        $categoryIdToUpdate = mysqli_real_escape_string($conn, $_POST["category_id"]);
+        $categoryIdToUpdate = $_POST["category_id"];
         $updatedCategoryName = mysqli_real_escape_string($conn, $_POST["update-category-name"]);
 
         // Perform the update
-        $updateCategoryQuery = "UPDATE categories SET name = '$updatedCategoryName' WHERE id = '$categoryIdToUpdate'";
-        $updateCategoryResult = mysqli_query($conn, $updateCategoryQuery);
+        $updateCategoryQuery = "UPDATE categories SET name = ? WHERE id = ?";
+        $updateCategoryResult = mysqli_prepare($conn, $updateCategoryQuery);
+        mysqli_stmt_bind_param($updateCategoryResult,"si",$updatedCategoryName,$categoryIdToUpdate);
+        $updatedResult=mysqli_stmt_execute($updateCategoryResult);
 
-        if ($updateCategoryResult) {
+        if ($updatedResult) {
             echo '<script>alert("Category updated successfully!");</script>';
         } else {
             echo '<script>alert("Error updating category: ' . mysqli_error($conn) . '");</script>';
@@ -200,7 +202,18 @@
 
                     echo '</tbody></table></div></dialog></td>
                                                 <td class="border px-4 py-4">
-                                               <button onclick="toggleFormsVisibility()">update</button>
+                                               
+                                                <form method="post" action="">
+                                                    <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                                                    <label for="update-category-name"></label>
+                                                    <input type="text" id="update-category-name" name="update-category-name"
+                                                        value="' . $row['name'] . '" required>
+                                                    <button type="submit" name="update-category"
+                                                        class="mt-2 p-2.5 text-sm font-medium bg-black text-white  rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                        Update 
+                                                    </button>
+                                                </form>
+                                            
                                                 </td>
                                                 <td>
                                                     <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
@@ -233,19 +246,7 @@
                     </button>
                 </form>
             </div>
-            <div id="updateCategory" class="mt-4 hidden">
-                <h2 class="text-xl font-semibold mb-2">updateCategory</h2>
-                <form method="post" action="">
-                    <input type="hidden" name="category_id" value="' . $row['id'] . '">
-                    <label for="update-category-name">Update Category Name:</label>
-                    <input type="text" id="update-category-name" name="update-category-name"
-                        value="' . $row['name'] . '" required>
-                    <button type="submit" name="update-category"
-                        class="mt-2 p-2.5 text-sm font-medium text-white bg-[#2F329F] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Update Category
-                    </button>
-                </form>
-            </div>
+
         </div>
     </div>
 </body>
@@ -280,4 +281,4 @@ function toggleFormsVisibility() {
 
 
 
-</html>
+</html> -->
