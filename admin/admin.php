@@ -38,8 +38,6 @@
         // Perform the deletion
         $deletePlantQuery = "DELETE FROM plants WHERE id = '$plantIdToDelete' AND category_id = '$categoryId'";
         $deletePlantResult = mysqli_query($conn, $deletePlantQuery);
-
-        // Check if the deletion was successful
         if ($deletePlantResult) {
             echo '<script>alert("Plant deleted successfully!");</script>';
         } else {
@@ -89,7 +87,6 @@
     }
 
     ?>
-
     <div class="p-5 mt-14 sm:ml-64">
         <div class="relative overflow-x-auto sm:rounded-lg">
             <div
@@ -281,4 +278,4 @@ function toggleFormsVisibility() {
 
 
 
-</html> -->
+</html>
