@@ -1,8 +1,10 @@
 <?php
 include("db.php");
-// include("cart.php");
-    session_start();
-// $conn = new mysqli($servername, $username, $password, $dbname);
+
+session_start();
+$categoryQuery = "SELECT id, name FROM categories";
+$categoryResult = mysqli_query($conn, $categoryQuery);
+$selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
 
 if ($_SESSION['LOGINEMAIL']) {
     $email = $_SESSION['LOGINEMAIL'];
@@ -97,21 +99,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             </svg>
             <h3 class="font-serif text-3xl mx-auto text-center mb-10">TRENDING PRODUCTS</h3>
         </div>
-        <div id="categories" class=" flex justify-center items-center gap-4 my-5">
+        <?php
+      if (mysqli_num_rows($categoryResult) > 0) {
+        echo '<div id="categories" class="flex justify-center items-center gap-4 my-5">';
+    
+        while ($category = mysqli_fetch_assoc($categoryResult)) {
+            $categoryId = $category['id'];
+            $categoryName = $category['name'];
+            $isActive = ($selectedCategory == $categoryName || ($selectedCategory == '' && $categoryName == 'love')) ? 'bg-green-800' : 'bg-white';
+                echo '<a href="?category=' . $categoryName . '" class="border-2 border-solid opacity-1 border-gray-200 rounded-full w-32 h-8 ' . $isActive . ' flex items-center justify-center">';
+            echo '<button class="text-gray-200">' . $categoryName . '</button>';
+            echo '</a>';
+        }
+    
+        echo '</div>';
+    } else {
+        echo '<p>No categories found.</p>';
+    }   
+        ?>
 
-            <a href="?category=house"
-                class=" border-2 border-solid bg-[#1f6200] opacity-1 border-gray-200 rounded-full w-32 h-8  flex items-center justify-center">
-                <button class="text-white">House</button>
-            </a>
-            <a href="?category=wedding"
-                class=" border-2 border-solid  opacity-1 border-gray-200 rounded-full w-32 h-8  flex items-center justify-center  active:bg-[#6fd404]">
-                <button class="text-gray-400 ">Wedding</button>
-            </a>
-            <a href="?category=love"
-                class=" border-2 border-solid opacity-1 border-gray-200 rounded-full w-40 h-8  flex items-center justify-center active:bg-[#6fd404]">
-                <button class="text-gray-400 ">Love</button>
-            </a>
-        </div>
         <div class="container mx-auto mt-10">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <?php foreach ($matchingPlants as $plant): ?>
@@ -125,9 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <p class="text-lg font-bold text-black truncate block capitalize">
                                 <?php echo $plant['name']; ?>
                             </p>
-
                         </div>
-
                     </a>
                 </div>
                 <?php endforeach; ?>
