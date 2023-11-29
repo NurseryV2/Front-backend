@@ -26,6 +26,8 @@ if ($userResult) {
         $deleteBasketQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ?");
         $deleteBasketQuery->bind_param("i", $userID);
         $deleteBasketQuery->execute();
+        header("Location: index.php");
+exit();
     }
 }
 
@@ -37,6 +39,7 @@ if (isset($_POST['remove'])) {
     $deletePlantQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ? AND plant_id = ?");
     $deletePlantQuery->bind_param("ii", $userID, $plantIDToRemove);
     $deletePlantQuery->execute();
+
 }
 
 ?>
