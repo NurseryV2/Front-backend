@@ -1,40 +1,38 @@
 <?php
 include("./client/db.php");
 
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
-
     $query = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($query);
-
-
     $stmt->bind_param("s", $email);
     $stmt->execute();
-
     $result = $stmt->get_result();
     session_start();
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         $_SESSION['LOGINEMAIL'] = $email;
-        $_SESSION['USERTYPE'] = $user['user_type']; // Store user_type in the session
+        $_SESSION['USERTYPE'] = $user['user_type'];
+        $_SESSION['STATUS'] = $user['status'];
 
-        // Check the user_type and redirect accordingly
-        if ($user['user_type'] == 1) {
-            header("Location: ./client/index.php");
-            exit;
+        if ($user['status'] == 0) {
+            echo '<script>
+            alert("Your access to this website is denied. Please contact your administrator.");
+            </script>';
         } else {
-            header("Location: ./admin/admin.php");
-            exit;
+            if ($user['user_type'] == 1) {
+                header("Location: ./client/index.php");
+                exit;
+            } else {
+                header("Location: ./admin/admin.php");
+                exit;
+            }
         }
 
+
     }
-
-
 }
 ?>
 

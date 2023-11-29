@@ -8,14 +8,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
-
-    // Perform form validation (add more validation as needed)
     if (empty($fullname) || empty($email) || empty($password) || empty($confirm_password)) {
         echo "<p class='text-red-500'>All fields are required.</p>";
     } elseif ($password !== $confirm_password) {
         echo "<p class='text-red-500'>Password and Confirm Password do not match.</p>";
     } else {
-        // Hash the password securely
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Use prepared statement to prevent SQL injection
