@@ -24,13 +24,28 @@ if (isset($_GET['category'])) {
 }
 if (isset($_POST["basket"])) {
     $basket = $_POST["basket"];
-    // echo $basket; // Insert into the basket table
-    $qBasket = $conn->prepare("INSERT INTO basket (user_id, plant_id) VALUES (?, ?)");
-    $qBasket->bind_param("ii", $IDuser, $basket);
-    $qBasket->execute();
+    $quantity = $_POST["quantity"];
+    $checkPlantQuery = $conn->prepare("SELECT * FROM basket WHERE user_id = ? AND plant_id = ?");
+    $checkPlantQuery->bind_param("ii", $IDuser, $basket);
+    $checkPlantQuery->execute();
+    $result = $checkPlantQuery->get_result();
 
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $newQuantity = $row['quantity'] + $quantity;
 
+        $updateQuantityQuery = $conn->prepare("UPDATE basket SET quantity = ? WHERE user_id = ? AND plant_id = ?");
+        $updateQuantityQuery->bind_param("iii", $newQuantity, $IDuser, $basket);
+        $updateQuantityQuery->execute();
+    } else {
+        $qBasket = $conn->prepare("INSERT INTO basket (user_id, plant_id, quantity) VALUES (?, ?, ?)");
+        $qBasket->bind_param("iii", $IDuser, $basket, $quantity);
+        $qBasket->execute();
+    }
 }
+
+
+
 
 $sql = "SELECT * FROM plants WHERE category_id = (SELECT id FROM categories WHERE name = '$categoryToShow');";
 $result = $conn->query($sql);
@@ -63,11 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 <body>
     <div class="  bg-cover bg-center h-screen ">
-
         <?php
         include("navbar.php");
         ?>
-
         <div class="max-w-screen-xl px-10 bg-transparent w-full h-screen py-10">
             <div class="backdrop-blur-sm bg-white w-full h-full p-10 mr-10 flex justify-around">
                 <img src="../images/6.jpg" alt="" class="h-screen w-auto -ml-16 -mt-10">
@@ -168,6 +181,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <div class="ml-auto">
                                 <form action="" method="POST">
                                     <button type="submit" name="basket" value="<?php echo $row['id']; ?>">
+                                        <input type="number" hidden name="quantity" value="1" min="1">
+
                                         <svg xmlns=" http://www.w3.org/2000/svg" width="20" height="20"
                                             fill="currentColor" class="bi bi-bag-plus hover:text-green-500 duration-200"
                                             viewBox="0 0 16 16">
