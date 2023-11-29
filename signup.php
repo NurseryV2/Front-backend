@@ -31,6 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
         if ($stmt->affected_rows > 0) {
             // Registration successful, redirect to login page
+            session_start();
+            $_SESSION['LOGINEMAIL'] = $email;
             header("Location: whos.php");
             exit;
         } else {

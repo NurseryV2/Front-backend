@@ -8,37 +8,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    $query = "SELECT * FROM users WHERE email = ? AND password = ?";
+    $query = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($query);
 
-    if (!$stmt) {
-        error_log("Error in statement preparation: " . $conn->error);
-        die("Internal Server Error");
-    }
 
-    $stmt->bind_param("ss", $email, $password);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
+
     $result = $stmt->get_result();
-
-    if (!$result) {
-        error_log("Error in statement execution: " . $stmt->error);
-        die("Internal Server Error");
-    }
-
     session_start();
-    $_SESSION['LOGINEMAIL'] = $email;
 
     if ($result->num_rows > 0) {
-        header("Location: index.php");
-        exit;
-    } else {
-        echo "No user found with the provided email and password";
-        header("Location:./admin/Dashboard.php");
+        $user = $result->fetch_assoc();
+        $_SESSION['LOGINEMAIL'] = $email;
+        $_SESSION['USERTYPE'] = $user['user_type']; // Store user_type in the session
+
+        // Check the user_type and redirect accordingly
+        if ($user['user_type'] == 1) {
+            header("Location: ./client/index.php");
+            exit;
+        } else {
+            header("Location: ./admin/admin.php");
+            exit;
+        }
+
     }
 
-    exit;
+
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

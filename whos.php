@@ -12,16 +12,11 @@ $row = $result->fetch_assoc();
 $iduser = $row['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    include("db.php");
+
+
 
     // Get selected role
     $role = $_POST["role"];
-    echo $role;
-
-    // Get the user_id dynamically from the session variable
-
-    echo $iduser;
-
     $update_query = "UPDATE users SET user_type = ? WHERE user_id = ?";
     $stmt = $conn->prepare($update_query);
     $stmt->bind_param("ii", $role, $iduser);
@@ -30,8 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($row['user_type'] == 1) {
         header("location: ./client/index.php");
         exit();
-    }
-    elseif($row['user_type']== 2) {
+    } elseif ($row['user_type'] == 2) {
         header("location: ./admin/admin.php");
     }
 
