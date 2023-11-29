@@ -16,6 +16,7 @@
     include("./navbar.php");
     include("./sidebar.php");
     include("db.php");
+    include("role.php");
 
     $usersQuery = "SELECT * FROM users WHERE user_type = 1";
     $result = mysqli_query($conn, $usersQuery);

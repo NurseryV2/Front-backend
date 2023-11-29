@@ -1,7 +1,6 @@
 <?php
-include("db.php");
+include("./client/db.php");
 
-// Error reporting and logging
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
@@ -34,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     } else {
         echo "No user found with the provided email and password";
-        header("Location: whos.php");
+        header("Location:./admin/Dashboard.php");
     }
 
     exit;

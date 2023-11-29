@@ -12,12 +12,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-plant"])) {
     $discountedPrice = mysqli_real_escape_string($conn, $_POST["discounted_price"]);
 
     // Handle image upload
-    $targetDirectory = "../uploads/";  // Create a directory named "uploads" to store the images
+    $targetDirectory = "../uploads/";
     $targetFile = $targetDirectory . basename($_FILES["image"]["name"]);
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-    // Check if the file is an actual image
     if (isset($_POST["add-plant"])) {
         $check = getimagesize($_FILES["image"]["tmp_name"]);
         if ($check !== false) {

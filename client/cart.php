@@ -23,7 +23,6 @@ if ($userResult) {
             $commandQuery->bind_param("ii", $userID, $plantID);
             $commandQuery->execute();
         }
-
         $deleteBasketQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ?");
         $deleteBasketQuery->bind_param("i", $userID);
         $deleteBasketQuery->execute();

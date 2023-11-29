@@ -1,6 +1,6 @@
 <?php
 // update_user_type.php
-include("db.php");
+include("./client/db.php");
 // Start the session (add this at the beginning of your file)
 session_start();
 $email = $_SESSION['LOGINEMAIL'];
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
     elseif($row['user_type']== 2) {
-        header("location: ../admin/admin.php");
+        header("location: ./admin/admin.php");
     }
 
 }

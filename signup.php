@@ -1,7 +1,7 @@
 <?php
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include("db.php");
+    include("./client/db.php");
 
     // Get user input
     $fullname = $_POST["fullname"];
