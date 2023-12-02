@@ -1,41 +1,52 @@
 <?php
 include("db.php");
 session_start();
-
 $email = $_SESSION['LOGINEMAIL'];
 $userQuery = "SELECT user_id FROM users WHERE email = '$email'";
 $userResult = mysqli_query($conn, $userQuery);
-
+$subtotal = 0;
 if ($userResult) {
     $row = mysqli_fetch_assoc($userResult);
     $userID = $row['user_id'];
 
+    // Calculate total amount
+    $subtotalQuery = "SELECT SUM(plants.price * basket.quantity) as total
+                      FROM basket
+                      JOIN plants ON plants.id = basket.plant_id
+                      WHERE user_id = $userID";
+    $subtotalResult = mysqli_query($conn, $subtotalQuery);
+    $subtotalRow = mysqli_fetch_assoc($subtotalResult);
+
+    // Making sure that thesubtotal is not NULL
+    $subtotal = isset($subtotalRow['total']) ? $subtotalRow['total'] : 0;
+
     if (isset($_POST['checkout'])) {
-        $basketQuery = $conn->prepare("SELECT plant_id, COUNT(*) as quantity FROM basket WHERE user_id = ? GROUP BY plant_id");
+        $basketQuery = $conn->prepare("SELECT id, plant_id, SUM(quantity) as quantity FROM basket WHERE user_id = ? GROUP BY plant_id");
         $basketQuery->bind_param("i", $userID);
         $basketQuery->execute();
         $results = $basketQuery->get_result();
 
         while ($row = $results->fetch_assoc()) {
             $plantID = $row['plant_id'];
-
-            $commandQuery = $conn->prepare("INSERT INTO commands(user_id, plant_id) VALUES(?, ?)");
-            $commandQuery->bind_param("ii", $userID, $plantID);
+          $basketId= $row['id'];
+            $commandQuery = $conn->prepare("INSERT INTO commands(user_id, plant_id, total_amount) VALUES(?, ?, ?)");
+            $commandQuery->bind_param("iii", $userID, $plantID, $subtotal);
             $commandQuery->execute();
+         
         }
+        $deleteBasketPivoQuery = $conn->prepare("DELETE FROM plant_basket_pivot WHERE basket_id = ?");
+        $deleteBasketPivoQuery->bind_param("i", $basketId);
+        $deleteBasketPivoQuery->execute();
         $deleteBasketQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ?");
         $deleteBasketQuery->bind_param("i", $userID);
         $deleteBasketQuery->execute();
+      
         header("Location: index.php");
-exit();
+        exit();
     }
 }
-
-// Handle remove action
 if (isset($_POST['remove'])) {
     $plantIDToRemove = $_POST['plantId'];
-    
-    // Use prepared statement to delete the plant from the basket
     $deletePlantQuery = $conn->prepare("DELETE FROM basket WHERE user_id = ? AND plant_id = ?");
     $deletePlantQuery->bind_param("ii", $userID, $plantIDToRemove);
     $deletePlantQuery->execute();
@@ -68,14 +79,14 @@ if (isset($_POST['remove'])) {
         </div>
         <div class="mt-8">
             <?php
-        $selectQuery = "SELECT * 
+            $selectQuery = "SELECT * 
         FROM basket
         JOIN plants ON plants.id = basket.plant_id
         WHERE user_id = $userID";
-        $queryResult = mysqli_query($conn, $selectQuery);
+            $queryResult = mysqli_query($conn, $selectQuery);
 
-        while ($plantInfo = mysqli_fetch_assoc($queryResult)) {
-            ?>
+            while ($plantInfo = mysqli_fetch_assoc($queryResult)) {
+                ?>
             <form method="post" action="">
                 <div class="flex flex-col md:flex-row border-b border-gray-400 py-4">
                     <div class="flex-shrink-0">
@@ -84,7 +95,9 @@ if (isset($_POST['remove'])) {
                     </div>
                     <div class="mt-4 md:mt-0 md:ml-6">
                         <div class="flex items-center">
-                            <h2 class="text-lg font-bold"><?php echo $plantInfo['name']; ?></h2>
+                            <h2 class="text-lg font-bold">
+                                <?php echo $plantInfo['name']; ?>
+                            </h2>
                         </div>
                         <div class="mt-4 flex items-center">
                             <span class="mr-2 text-gray-600">Quantity:</span>
@@ -94,14 +107,18 @@ if (isset($_POST['remove'])) {
                                     <input type="hidden" name="plantId" value="<?php echo $plantInfo['plant_id']; ?>">
                                     -
                                 </button>
-                                <span class="mx-2 text-gray-600"><?php echo $plantInfo['quantity']; ?></span>
+                                <span class="mx-2 text-gray-600">
+                                    <?php echo $plantInfo['quantity']; ?>
+                                </span>
                                 <button class="bg-gray-200 rounded-r-lg px-2 py-1" type="submit" name="increase"
                                     value="1">
                                     <input type="hidden" name="plantId" value="<?php echo $plantInfo['plant_id']; ?>">
                                     +
                                 </button>
                             </div>
-                            <span class="ml-4 font-bold">$<?php echo $plantInfo['price']; ?></span>
+                            <span class="ml-4 font-bold">$
+                                <?php echo $plantInfo['price']; ?>
+                            </span>
                         </div>
                     </div>
                     <div class="ml-auto">
@@ -120,15 +137,10 @@ if (isset($_POST['remove'])) {
         </div>
         <div class="flex justify-end items-center mt-8">
             <span class="text-gray-600 mr-4">Subtotal:</span>
-            <?php
-$subtotalQuery = "SELECT SUM(plants.price * basket.quantity) as total
-FROM basket
-JOIN plants ON plants.id = basket.plant_id
-WHERE user_id = $userID";
-$subtotalResult = mysqli_query($conn, $subtotalQuery);
-$subtotal = mysqli_fetch_assoc($subtotalResult)['total'];
-        ?>
-            <span class="text-xl font-bold">$<?php echo number_format($subtotal, 2); ?></span>
+
+            <span class="text-xl font-bold">$
+                <?php echo number_format($subtotal, 2); ?>
+            </span>
         </div>
     </div>
 

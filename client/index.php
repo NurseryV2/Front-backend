@@ -22,15 +22,19 @@ $categoryToShow = "house";
 if (isset($_GET['category'])) {
     $categoryToShow = $_GET['category'];
 }
+
 if (isset($_POST["basket"])) {
     $basket = $_POST["basket"];
     $quantity = $_POST["quantity"];
+
+    // Check if the plant is already in the basket
     $checkPlantQuery = $conn->prepare("SELECT * FROM basket WHERE user_id = ? AND plant_id = ?");
     $checkPlantQuery->bind_param("ii", $IDuser, $basket);
     $checkPlantQuery->execute();
     $result = $checkPlantQuery->get_result();
 
     if ($result->num_rows > 0) {
+        // If the plant is already in the basket, update the quantity
         $row = $result->fetch_assoc();
         $newQuantity = $row['quantity'] + $quantity;
 
@@ -38,11 +42,17 @@ if (isset($_POST["basket"])) {
         $updateQuantityQuery->bind_param("iii", $newQuantity, $IDuser, $basket);
         $updateQuantityQuery->execute();
     } else {
+        // If the plant is not in the basket, insert into the basket table
         $qBasket = $conn->prepare("INSERT INTO basket (user_id, plant_id, quantity) VALUES (?, ?, ?)");
         $qBasket->bind_param("iii", $IDuser, $basket, $quantity);
         $qBasket->execute();
+        $basketId = $qBasket->insert_id;
+        $pivotQuery = $conn->prepare("INSERT INTO plant_basket_pivot(plant_id, basket_id) VALUES (?, ?)");
+        $pivotQuery->bind_param("ii", $basket, $basketId);
+        $pivotQuery->execute();
     }
 }
+
 
 
 
