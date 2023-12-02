@@ -2,6 +2,10 @@
 include("db.php");
 
 session_start();
+if (!isset($_SESSION['LOGINEMAIL'])) {
+    header("Location:login.php");
+    exit();
+}
 $categoryQuery = "SELECT id, name FROM categories";
 $categoryResult = mysqli_query($conn, $categoryQuery);
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
