@@ -53,7 +53,7 @@
         $deletePlantsResult = mysqli_query($conn, $deletePlantsQuery);
 
         if ($deletePlantsResult) {
-            // Now, delete the category itself
+            // Now,  let's delete the category itself
             $deleteCategoryQuery = "DELETE FROM categories WHERE id = '$categoryIdToDelete'";
             $deleteCategoryResult = mysqli_query($conn, $deleteCategoryQuery);
 
@@ -99,9 +99,9 @@
                 </div>
                 <label for="table-search" class="sr-only">Search</label>
 
-                <form class="flex items-center">
+                <form method="post" action="./search_category.php" class="flex items-center">
                     <div class=" w-full">
-                        <input type="text" id="simple-search"
+                        <input type="text" id="simple-search" name="searchTerm"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Search for a category" required>
                     </div>
@@ -132,8 +132,8 @@
                                     Category Name
                                 </th>
                                 <th>See Plants</th>
-                                    <th>Update</th>
-                                    <th>Delete</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
                                     
                         </thead>
                         <tbody>';
@@ -179,55 +179,54 @@
                                                             <img src="' . $plantRow['image_url'] . '" alt="Product" class="h-12 w-28 object-cover my-2" />
                                                         </td>
                                                         <td>
-                                                            <form method="post" action="">
-                                                                <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
-                                                                <button type="submit" name="delete-plant" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
-                                                                    Delete
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>';
-                    }
+                                                        <form method="post" action="">
+            <input type="hidden" name="plant_id" value="' . $plantRow['id'] . '">
+            <input type="hidden" name="category_id" value="' . $row['id'] . '">
+            <button type="submit" name="delete-plant"
+                class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                Delete
+            </button>
+            </form>
 
-                    // Add the form for updating the category here
-                    echo '<tr>
-                                                    <td colspan="3">
+            </td>
+            </tr>';
+            }
 
-                                                    </td>
-                                                </tr>';
+            echo '<tr>
+                <td colspan="3">
 
-                    echo '</tbody></table></div></dialog></td>
-                                                <td class="border px-4 py-4">
-                                               
-                                                <form method="post" action="">
-                                                    <input type="hidden" name="category_id" value="' . $row['id'] . '">
-                                                    <label for="update-category-name"></label>
-                                                    <input type="text" id="update-category-name" name="update-category-name"
-                                                        value="' . $row['name'] . '" required>
-                                                    <button type="submit" name="update-category"
-                                                        class="mt-2 p-2.5 text-sm font-medium bg-black text-white  rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                        Update 
-                                                    </button>
-                                                </form>
-                                            
-                                                </td>
-                                                <td>
-                                                    <form method="post" action="' . $_SERVER["PHP_SELF"] . '">
-                                                        <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                </td>
+            </tr>';
+
+            echo '</tbody>
+            </table>
+        </div>
+        </dialog>
+        </td>
+        <td class="border px-2 py-4">
+
+            <form method="post" action="">
+                <input type="hidden" name="category_id" value="' . $row['id'] . '">
+                <label for="update-category-name"></label>
+                <input type="text" id="update-category-name" name="update-category-name" value="' . $row['name'] . '"
+                    required>
+                <button type="submit" name="update-category"
+                    class="mt-2 p-2.5 text-sm font-medium bg-black text-white  rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Edit
+                </button>
+            </form>
+
+        </td>
+        <td>
+            <form method="post" action=3">
+                                              <input type="hidden" name="category_id" value="' . $row['id'] . '">
                                                         <button type="submit" name="delete-category" class="mt-2 p-2.5 text-sm font-medium text-white bg-red-500 rounded-lg border border-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200">
                                                             Delete
                                                         </button>
                                                     </form>
                                                 </td>
-                                            </tr>';
-                }
-
-                echo '</tbody></table>';
-            } else {
-                echo '<p>No data found</p>';
-            }
-            mysqli_close($conn);
-            ?>
+                                            </tr>' ; } echo '</tbody></table>' ; } else { echo '<p>No data found</p>' ;
+                } mysqli_close($conn); ?>
             <div id="addCategoryForm" class="mt-4 hidden">
                 <h2 class="text-xl font-semibold mb-2">Add New Category</h2>
                 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
@@ -245,32 +244,68 @@
 
         </div>
     </div>
-</body>
 
-</html>
 
-</div>';
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("simple-search");
 
-<script>
-function openModal(modalId) {
-    var modal = document.getElementById(modalId);
-    if (modal) {
-        modal.showModal();
+        searchInput.addEventListener("input", function() {
+            const searchTerm = searchInput.value.trim();
+
+            if (searchTerm.length > 0) {
+                // Make an AJAX request to the search_category.php file
+                fetch("search_category.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: `searchTerm=${encodeURIComponent(searchTerm)}`,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the UI with the search results
+                        updateCategoryList(data);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching data:", error);
+                    });
+            }
+        });
+
+        function updateCategoryList(categories) {
+            const categoryListContainer = document.getElementById("category-list");
+            categoryListContainer.innerHTML = "";
+            categories.forEach(category => {
+                const listItem = document.createElement("li");
+                listItem.textContent = category.name;
+                categoryListContainer.appendChild(listItem);
+            });
+        }
+    });
+
+
+
+
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.showModal();
+        }
     }
-}
 
-function toggleFormVisibility() {
-    var addCategoryForm = document.getElementById('addCategoryForm');
-    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-        '') ? 'block' : 'none';
-}
+    function toggleFormVisibility() {
+        var addCategoryForm = document.getElementById('addCategoryForm');
+        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+            '') ? 'block' : 'none';
+    }
 
-function toggleFormsVisibility() {
-    var addCategoryForm = document.getElementById('updateCategory');
-    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-        '') ? 'block' : 'none';
-}
-</script>
+    function toggleFormsVisibility() {
+        var addCategoryForm = document.getElementById('updateCategory');
+        addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
+            '') ? 'block' : 'none';
+    }
+    </script>
 
 </body>
 
