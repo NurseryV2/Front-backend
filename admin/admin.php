@@ -16,7 +16,6 @@
     include("./navbar.php");
     include("./sidebar.php");
     include("db.php");
-    // Handle adding a new category
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-category"])) {
         $categoryName = mysqli_real_escape_string($conn, $_POST["category-name"]);
         $insertQuery = "INSERT INTO categories (name) VALUES ('$categoryName')";
