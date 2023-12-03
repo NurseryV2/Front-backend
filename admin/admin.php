@@ -42,7 +42,7 @@
                 </div>
                 <label for="table-search" class="sr-only">Search</label>
 
-                <form method="post" action="./search_category.php" id="searchForm" class=" flex items-center">
+                <form method="post" action="" id="searchForm" class=" flex items-center">
                     <div class=" w-full">
                         <input type="text" id="simple-search" name="searchTerm"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -80,17 +80,17 @@
         </div>
     </div>
     <script src="../js/script.js"></script>
+
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const searchInput = document.getElementById("simple-search");
         const categoryTable = document.getElementById("categoryTable");
-        const searchForm = document.getElementById("searchForm");
-        const searchButton = document.getElementById("searchButton");
 
-        searchButton.addEventListener("click", function() {
+        searchInput.addEventListener("input", function() {
             const searchTerm = searchInput.value.trim();
 
             if (searchTerm.length > 0) {
+                // Make an AJAX request to the correct PHP file
                 fetch("./search_category.php", {
                         method: "POST",
                         headers: {
@@ -100,6 +100,7 @@
                     })
                     .then(response => response.text())
                     .then(data => {
+                        // Update the inner HTML of the tbody in the categoryTable
                         categoryTable.getElementsByTagName('tbody')[0].innerHTML = data;
                     })
                     .catch(error => {
@@ -107,38 +108,9 @@
                     });
             }
         });
-
-        categoryTable.addEventListener("click", function(event) {
-            const target = event.target;
-            if (target.classList.contains("btn-success")) {
-                const categoryId = target.getAttribute("data-category-id");
-
-                // Fetch plants for the specific category
-                fetch(`./get_plants.php?category_id=${categoryId}`)
-                    .then(response => response.text())
-                    .then(data => {
-                        const modalId = `modal_${categoryId}`;
-                        const modal = document.getElementById(modalId);
-
-                        if (modal) {
-                            modal.innerHTML = data;
-                            modal.showModal();
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error fetching plants:", error);
-                    });
-            }
-        });
     });
+    </script>
+</body>
 
 
-    searchForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-    }); <
-    /scrip>> < /
-    body >
-
-
-        <
-        /html>
+</html>
