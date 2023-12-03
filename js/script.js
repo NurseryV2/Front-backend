@@ -1,40 +1,4 @@
 
-document.addEventListener("DOMContentLoaded", function() {
-    const searchInput = document.getElementById("simple-search");
-
-    searchInput.addEventListener("input", function() {
-        const searchTerm = searchInput.value.trim();
-
-        if (searchTerm.length > 0) {
-            fetch("search_category.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: `searchTerm=${encodeURIComponent(searchTerm)}`,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    updateCategoryList(data);
-                })
-                .catch(error => {
-                    console.error("Error fetching data:", error);
-                });
-        }
-    });
-
-    function updateCategoryList(categories) {
-        const categoryListContainer = document.getElementById("category-list");
-        categoryListContainer.innerHTML = "";
-        categories.forEach(category => {
-            const listItem = document.createElement("li");
-            listItem.textContent = category.name;
-            categoryListContainer.appendChild(listItem);
-        });
-    }
-});
-
-
 
 
 function openModal(modalId) {
@@ -42,6 +6,10 @@ function openModal(modalId) {
     if (modal) {
         modal.showModal();
     }
+}
+function closeModal(categoryId) {
+    const modal = document.getElementById(`modal_${categoryId}`);
+    modal.close();
 }
 
 function toggleFormVisibility() {
