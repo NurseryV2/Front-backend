@@ -1,6 +1,4 @@
 
-
-
 function openModal(modalId) {
     var modal = document.getElementById(modalId);
     if (modal) {
@@ -12,14 +10,4 @@ function closeModal(categoryId) {
     modal.close();
 }
 
-function toggleFormVisibility() {
-    var addCategoryForm = document.getElementById('addCategoryForm');
-    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-        '') ? 'block' : 'none';
-}
 
-function toggleFormsVisibility() {
-    var addCategoryForm = document.getElementById('updateCategory');
-    addCategoryForm.style.display = (addCategoryForm.style.display == 'none' || addCategoryForm.style.display ==
-        '') ? 'block' : 'none';
-}
